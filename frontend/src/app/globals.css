@@ -212,4 +212,120 @@
   [data-node-type] {
     overflow: visible !important;
   }
+
+  /* ==========================================================================
+     VoxBento Design System Tokens & Broadcast Console Styling
+     ========================================================================== */
+  .brutal-card {
+    background: #ffffff;
+    border: 2px solid #0d0f10;
+    border-radius: 12px;
+    box-shadow: 4px 4px 0px #0d0f10;
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .brutal-card-hover:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px #0d0f10;
+  }
+
+  .brutal-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    letter-spacing: 0.02em;
+    padding: 0.625rem 1.25rem;
+    border-radius: 8px;
+    border: 2px solid #0d0f10;
+    background: #ffffff;
+    color: #0d0f10;
+    box-shadow: 3px 3px 0px #0d0f10;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.1s ease;
+  }
+
+  .brutal-btn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0px #0d0f10;
+  }
+
+  .brutal-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 #0d0f10;
+  }
+
+  .brutal-btn-primary {
+    background: #2563eb;
+    color: #ffffff;
+    border: 2px solid #0d0f10;
+    box-shadow: 3px 3px 0px #0d0f10;
+  }
+
+  .brutal-btn-primary:hover {
+    background: #1d4ed8;
+  }
+
+  .brutal-btn-record {
+    background: #dc2626;
+    color: #ffffff;
+    border: 2px solid #0d0f10;
+    box-shadow: 4px 4px 0px #0d0f10;
+  }
+
+  .brutal-btn-record:hover {
+    background: #b91c1c;
+  }
+
+  .brutal-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-radius: 6px;
+    border: 1.5px solid #0d0f10;
+    box-shadow: 1.5px 1.5px 0px #0d0f10;
+    line-height: 1.2;
+  }
+
+  .brutal-badge-live {
+    background: #dcfce7;
+    color: #14532d;
+  }
+
+  .brutal-badge-tech {
+    background: #f1f5f9;
+    color: #0f172a;
+  }
+
+  .brutal-badge-record {
+    background: #fee2e2;
+    color: #7f1d1d;
+  }
+
+  .brutal-badge-accent {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  /* Broadcast Audio Level Meter Bar */
+  .meter-bar {
+    width: 3px;
+    background-color: #10b981;
+    border-radius: 1px;
+    animation: meterJitter 0.8s ease-in-out infinite alternate;
+  }
+
+  @keyframes meterJitter {
+    0% { height: 20%; opacity: 0.5; }
+    50% { height: 85%; opacity: 1; }
+    100% { height: 40%; opacity: 0.7; }
+  }
 }

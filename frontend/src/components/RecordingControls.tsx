@@ -389,8 +389,8 @@ export const RecordingControls: React.FC<RecordingControlsProps> = ({
                             handleStartRecording();
                           }}
                           disabled={isStarting || isProcessing || isRecordingDisabled || isValidatingModel || isStartingRecording}
-                          className={`w-12 h-12 flex items-center justify-center ${isStarting || isProcessing || isValidatingModel || isStartingRecording ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-600'
-                            } rounded-full text-white transition-colors relative`}
+                          className={`w-12 h-12 flex items-center justify-center border-2 border-[#0d0f10] shadow-[3px_3px_0px_#0d0f10] ${isStarting || isProcessing || isValidatingModel || isStartingRecording ? 'bg-zinc-400' : 'bg-red-600 hover:bg-red-700'
+                            } rounded-xl text-white transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] active:translate-x-[1px] active:translate-y-[1px] relative`}
                         >
                           {isValidatingModel || isStartingRecording ? (
                             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
@@ -419,14 +419,14 @@ export const RecordingControls: React.FC<RecordingControlsProps> = ({
                               }
                             }}
                             disabled={isPausing || isResuming || isStopping}
-                            className={`w-10 h-10 flex items-center justify-center ${isPausing || isResuming || isStopping
-                              ? 'bg-gray-200 border-2 border-gray-300 text-gray-400'
-                              : 'bg-white border-2 border-gray-300 text-gray-600 hover:border-gray-400 hover:bg-gray-50'
-                              } rounded-full transition-colors relative`}
+                            className={`w-10 h-10 flex items-center justify-center border-2 border-[#0d0f10] shadow-[2px_2px_0px_#0d0f10] ${isPausing || isResuming || isStopping
+                              ? 'bg-zinc-200 text-zinc-400'
+                              : 'bg-white text-[#0d0f10] hover:bg-zinc-100'
+                              } rounded-lg transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] relative`}
                           >
                             {isPaused ? <Play size={16} /> : <Pause size={16} />}
                             {(isPausing || isResuming) && (
-                              <div className="absolute -top-8 text-gray-600 font-medium text-xs">
+                              <div className="absolute -top-8 text-[#0d0f10] font-mono font-bold text-xs bg-white px-1.5 py-0.5 border border-[#0d0f10] rounded shadow-[1px_1px_0px_#0d0f10]">
                                 {isPausing ? 'Pausing...' : 'Resuming...'}
                               </div>
                             )}
@@ -445,12 +445,12 @@ export const RecordingControls: React.FC<RecordingControlsProps> = ({
                               handleStopRecording();
                             }}
                             disabled={isStopping || isPausing || isResuming || isStartingRecording}
-                            className={`w-10 h-10 flex items-center justify-center ${isStopping || isPausing || isResuming || isStartingRecording ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-600'
-                              } rounded-full text-white transition-colors relative`}
+                            className={`w-10 h-10 flex items-center justify-center border-2 border-[#0d0f10] shadow-[2px_2px_0px_#0d0f10] ${isStopping || isPausing || isResuming || isStartingRecording ? 'bg-zinc-400' : 'bg-red-600 hover:bg-red-700'
+                              } rounded-lg text-white transition-all hover:-translate-x-[1px] hover:-translate-y-[1px] relative`}
                           >
                             <Square size={16} />
                             {isStopping && (
-                              <div className="absolute -top-8 text-gray-600 font-medium text-xs">
+                              <div className="absolute -top-8 text-[#0d0f10] font-mono font-bold text-xs bg-white px-1.5 py-0.5 border border-[#0d0f10] rounded shadow-[1px_1px_0px_#0d0f10]">
                                 Stopping...
                               </div>
                             )}
@@ -463,14 +463,14 @@ export const RecordingControls: React.FC<RecordingControlsProps> = ({
                     </>
                   )}
 
-                  <div className="flex items-center space-x-1 mx-4">
+                  <div className="flex items-center space-x-1.5 mx-3 px-2 py-1.5 bg-zinc-100 border-2 border-[#0d0f10] rounded-lg shadow-[2px_2px_0px_#0d0f10]">
                     {barHeights.map((height, index) => (
                       <div
                         key={index}
-                        className={`w-1 rounded-full transition-all duration-200 ${isPaused ? 'bg-orange-500' : 'bg-red-500'
+                        className={`w-1.5 rounded-sm transition-all duration-200 ${isPaused ? 'bg-amber-500' : 'bg-emerald-500'
                           }`}
                         style={{
-                          height: isRecording && !isPaused ? height : '4px',
+                          height: isRecording && !isPaused ? height : '6px',
                           opacity: isPaused ? 0.6 : 1,
                         }}
                       />

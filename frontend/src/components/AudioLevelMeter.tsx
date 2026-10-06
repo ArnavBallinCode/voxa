@@ -63,42 +63,39 @@ export function AudioLevelMeter({
   return (
     <div className={`flex items-center space-x-2 ${className}`}>
       {/* Device activity indicator */}
-      <div className={`w-2 h-2 rounded-full ${
-        isActive ? 'bg-green-400 animate-pulse' : 'bg-gray-300'
+      <div className={`w-2 h-2 rounded-full border border-[#0d0f10] ${
+        isActive ? 'bg-emerald-500 animate-pulse' : 'bg-gray-300'
       }`} title={`${deviceName} - ${isActive ? 'Active' : 'Inactive'}`} />
 
       {/* Level meter container */}
       <div className={`flex-1 ${sizes.container} relative`}>
         {/* Background */}
-        <div className="w-full h-full bg-gray-200 rounded-sm overflow-hidden">
+        <div className="w-full h-full bg-white border-2 border-[#0d0f10] rounded-sm overflow-hidden box-content">
           {/* RMS level bar (main level) */}
           <div
-            className={`${sizes.meter} ${rmsColor} transition-all duration-150 ease-out rounded-sm`}
+            className={`h-full ${rmsColor} transition-all duration-150 ease-out`}
             style={{ width: `${rmsPercent}%` }}
           />
 
           {/* Peak level indicator (thin line) */}
           {peakPercent > rmsPercent && (
             <div
-              className={`absolute top-0 bottom-0 w-0.5 ${peakColor} transition-all duration-75`}
+              className="absolute top-0 bottom-0 w-0.5 bg-[#0d0f10] transition-all duration-75"
               style={{ left: `${peakPercent}%` }}
             />
           )}
         </div>
 
-        {/* Level markers */}
-        <div className="absolute inset-0 flex justify-between items-center px-1 pointer-events-none">
-          {/* 25% marker */}
-          <div className="w-px h-full bg-gray-400 opacity-30" style={{ marginLeft: '25%' }} />
-          {/* 50% marker */}
-          <div className="w-px h-full bg-gray-400 opacity-30" style={{ marginLeft: '50%' }} />
-          {/* 75% marker */}
-          <div className="w-px h-full bg-gray-400 opacity-30" style={{ marginLeft: '75%' }} />
+        {/* Segment ticks */}
+        <div className="absolute inset-0 pointer-events-none">
+          {[25, 50, 75].map((p) => (
+            <div key={p} className="absolute top-0 bottom-0 w-px bg-[#0d0f10] opacity-40" style={{ left: `${p}%` }} />
+          ))}
         </div>
       </div>
 
       {/* Level percentage display */}
-      <div className={`${sizes.text} text-gray-600 font-mono min-w-[3rem] text-right`}>
+      <div className={`${sizes.text} text-[#0d0f10] font-mono font-bold tabular-nums min-w-[3rem] text-right`}>
         {rmsPercent}%
       </div>
     </div>

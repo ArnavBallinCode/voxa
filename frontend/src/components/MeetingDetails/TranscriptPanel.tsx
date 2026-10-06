@@ -108,7 +108,7 @@ export function TranscriptPanel({
   return (
     <div className="flex h-full min-w-0 w-full bg-white flex-col relative @container">
       {/* Title area */}
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-4 border-b-2 border-[#0d0f10] bg-[#fafbfc]">
         <TranscriptButtonGroup
           transcriptCount={usePagination ? (totalCount ?? convertedSegments.length) : (transcripts?.length || 0)}
           onCopyTranscript={onCopyTranscript}
@@ -142,10 +142,10 @@ export function TranscriptPanel({
 
       {/* Custom prompt input at bottom of transcript section */}
       {!isRecording && convertedSegments.length > 0 && (
-        <div className="p-1 border-t border-gray-200">
+        <div className="p-3 border-t-2 border-[#0d0f10] bg-[#f8fafc]">
           <textarea
-            placeholder="Add context for AI summary. For example people involved, meeting overview, objective etc..."
-            className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm min-h-[80px] resize-y"
+            placeholder="Add context for AI summary. (e.g., participants, agenda, technical constraints)..."
+            className="w-full px-3 py-2 border-2 border-[#0d0f10] shadow-[2px_2px_0px_#0d0f10] rounded-lg text-xs font-mono focus:outline-none focus:ring-0 bg-white min-h-[80px] resize-y placeholder:text-gray-400"
             value={customPrompt}
             onChange={(e) => onPromptChange(e.target.value)}
           />

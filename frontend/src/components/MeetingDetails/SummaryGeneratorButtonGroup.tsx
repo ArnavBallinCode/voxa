@@ -87,21 +87,21 @@ export function SummaryGeneratorButtonGroup({
         <Button
           variant="outline"
           size="sm"
-          className="bg-gradient-to-r from-red-50 to-orange-50 hover:from-red-100 hover:to-orange-100 border-red-200 px-3 gap-2"
+          className="border-2 border-[#0d0f10] shadow-[2px_2px_0px_#0d0f10] font-bold text-xs uppercase tracking-wider bg-red-600 hover:bg-red-700 text-white px-3 gap-2"
           onClick={() => {
             Analytics.trackButtonClick('stop_summary_generation', 'meeting_details');
             onStopGeneration();
           }}
           title="Stop summary generation"
         >
-          <Square size={18} fill="currentColor" />
+          <Square size={16} fill="currentColor" />
           <span className="hidden @[24rem]:inline">Stop</span>
         </Button>
       ) : (
         <Button
           variant="outline"
           size="sm"
-          className="bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 border-blue-200 px-3 gap-2"
+          className="border-2 border-[#0d0f10] shadow-[2px_2px_0px_#0d0f10] font-bold text-xs uppercase tracking-wider bg-white hover:bg-zinc-100 text-[#0d0f10] px-3 gap-2"
           onClick={() => {
             Analytics.trackButtonClick('generate_summary', 'meeting_details');
             void onGenerateSummary(customPrompt);
@@ -115,12 +115,12 @@ export function SummaryGeneratorButtonGroup({
         >
           {isModelConfigLoading ? (
             <>
-              <Loader2 className="animate-spin" size={18} />
+              <Loader2 className="animate-spin" size={16} />
               <span className="hidden @[24rem]:inline">Processing...</span>
             </>
           ) : (
             <>
-              <Sparkles size={18} />
+              <Sparkles size={16} className="text-blue-600" />
               <span className="hidden @[24rem]:inline">{hasSummary ? 'Regenerate Summary' : 'Generate Summary'}</span>
             </>
           )}
@@ -135,9 +135,10 @@ export function SummaryGeneratorButtonGroup({
           <Button
             variant="outline"
             size="sm"
+            className="border-2 border-[#0d0f10] shadow-[2px_2px_0px_#0d0f10] font-bold text-xs hover:bg-zinc-100 text-[#0d0f10]"
             title="Summary Settings"
           >
-            <Settings />
+            <Settings size={16} />
             <span className="hidden @[40rem]:inline">AI Model</span>
           </Button>
         </DialogTrigger>

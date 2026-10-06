@@ -196,7 +196,7 @@ export default function Home() {
   const isLiveMeeting = recordingState.isRecording || transcripts.length > 0 || isProcessingStop;
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen bg-[#eef1f6]">
       {/* All Modals supported*/}
       <SettingsModals
         modals={modals}
@@ -245,7 +245,7 @@ export default function Home() {
                 }}
               >
                 <div className="w-2/3 max-w-[750px] flex justify-center">
-                  <div className="bg-white rounded-full shadow-lg flex items-center">
+                  <div className="bg-[#0d0f10] p-1.5 border-2 border-[#0d0f10] shadow-[4px_4px_0px_#0d0f10] rounded-2xl flex items-center">
                     <RecordingControls
                       isRecording={recordingState.isRecording}
                       onRecordingStop={(callApi = true) => handleRecordingStop(callApi)}

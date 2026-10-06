@@ -19,12 +19,12 @@ export function SummaryUpdaterButtonGroup({
   onCopy,
 }: SummaryUpdaterButtonGroupProps) {
   return (
-    <ButtonGroup>
+    <ButtonGroup className="gap-2">
       {/* Save button */}
       <Button
         variant="outline"
         size="sm"
-        className={`${isDirty ? 'bg-green-200' : ""}`}
+        className={`brutal-btn ${isDirty ? 'bg-emerald-300' : 'bg-white'} text-xs font-mono uppercase tracking-wider h-8 px-3`}
         title={isSaving ? "Saving" : "Save Changes"}
         onClick={() => {
           Analytics.trackButtonClick('save_changes', 'meeting_details');
@@ -34,12 +34,12 @@ export function SummaryUpdaterButtonGroup({
       >
         {isSaving ? (
           <>
-            <Loader2 className="animate-spin" />
+            <Loader2 className="animate-spin h-3.5 w-3.5 mr-1" />
             <span className="hidden @[40rem]:inline">Saving...</span>
           </>
         ) : (
           <>
-            <Save />
+            <Save className="h-3.5 w-3.5 mr-1" />
             <span className="hidden @[40rem]:inline">Save</span>
           </>
         )}
@@ -54,12 +54,11 @@ export function SummaryUpdaterButtonGroup({
           Analytics.trackButtonClick('copy_summary', 'meeting_details');
           onCopy();
         }}
-        className="cursor-pointer"
+        className="brutal-btn bg-white text-xs font-mono uppercase tracking-wider h-8 px-3 cursor-pointer"
       >
-        <Copy />
+        <Copy className="h-3.5 w-3.5 mr-1" />
         <span className="hidden @[40rem]:inline">Copy</span>
       </Button>
-
     </ButtonGroup>
   );
 }

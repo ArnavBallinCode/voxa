@@ -16,10 +16,10 @@ const Logo = React.forwardRef<HTMLButtonElement, LogoProps>(
             <button
               ref={ref}
               type="button"
-              className="flex items-center justify-center w-9 h-9 mx-auto mb-3 cursor-pointer bg-zinc-900 text-white rounded-xl shadow-sm hover:opacity-90 transition-all font-bold text-sm tracking-tight"
+              className="flex items-center justify-center w-9 h-9 mx-auto mb-3 cursor-pointer bg-[#0d0f10] text-white rounded-lg border-2 border-[#0d0f10] shadow-[2px_2px_0px_#0d0f10] hover:-translate-x-[1px] hover:-translate-y-[1px] transition-all font-black text-sm tracking-tight"
               aria-label="About Voxa"
             >
-              V
+              VX
             </button>
           </DialogTrigger>
         ) : (
@@ -27,20 +27,23 @@ const Logo = React.forwardRef<HTMLButtonElement, LogoProps>(
             <button
               ref={ref}
               type="button"
-              className="w-full flex items-center gap-2.5 px-3 py-2 mb-3 rounded-xl border border-zinc-200/80 bg-zinc-50/80 hover:bg-zinc-100/80 transition-all text-left cursor-pointer group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400"
+              className="w-full flex items-center justify-between px-3 py-2.5 mb-3 rounded-lg border-2 border-[#0d0f10] bg-white shadow-[3px_3px_0px_#0d0f10] hover:-translate-x-[1px] hover:-translate-y-[1px] hover:shadow-[4px_4px_0px_#0d0f10] transition-all text-left cursor-pointer group focus-visible:outline-none"
               aria-label="About Voxa"
             >
-              <div className="w-7 h-7 rounded-lg bg-zinc-900 text-white flex items-center justify-center font-bold text-xs shadow-sm">
-                V
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-md bg-[#0d0f10] text-white flex items-center justify-center font-black text-xs tracking-tighter shadow-sm">
+                  VX
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-extrabold text-[#0d0f10] uppercase tracking-wider leading-none">
+                    VOXA
+                  </span>
+                  <span className="text-[9px] font-mono font-bold text-zinc-500 uppercase tracking-widest leading-none mt-1">
+                    CONSOLE // V2
+                  </span>
+                </div>
               </div>
-              <div className="flex flex-col">
-                <span className="text-sm font-semibold text-zinc-900 tracking-tight leading-none group-hover:text-zinc-950">
-                  Voxa
-                </span>
-                <span className="text-[10px] text-zinc-500 font-medium leading-none mt-1">
-                  Meeting Intelligence
-                </span>
-              </div>
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="System Online" />
             </button>
           </DialogTrigger>
         )}

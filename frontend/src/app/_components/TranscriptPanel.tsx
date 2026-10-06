@@ -58,17 +58,17 @@ export function TranscriptPanel({
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
             {isRecording && (
-              <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold tracking-wider uppercase bg-red-50 text-red-600 border border-red-200">
-                <span className={`w-2 h-2 rounded-full ${isPaused ? 'bg-amber-500' : 'bg-red-500 animate-pulse'}`} />
-                {isPaused ? 'Paused' : 'Live'}
+              <span className={`brutal-badge ${isPaused ? 'bg-amber-100 text-amber-950' : 'brutal-badge-record'}`}>
+                <span className={`w-2 h-2 rounded-full ${isPaused ? 'bg-amber-600' : 'bg-red-600 animate-pulse'}`} />
+                {isPaused ? 'STANDBY // PAUSED' : 'ON AIR // LIVE INGEST'}
               </span>
             )}
-            <h2 className="text-base font-semibold text-zinc-900 truncate">
+            <h2 className="text-base font-black uppercase tracking-tight text-[#0d0f10] truncate">
               {displayTitle}
             </h2>
             {transcripts?.length > 0 && (
-              <span className="text-xs text-zinc-400 font-medium">
-                {transcripts.length} {transcripts.length === 1 ? 'segment' : 'segments'}
+              <span className="brutal-badge brutal-badge-tech">
+                {transcripts.length} {transcripts.length === 1 ? 'SEGMENT' : 'SEGMENTS'}
               </span>
             )}
           </div>
@@ -81,7 +81,7 @@ export function TranscriptPanel({
                   size="sm"
                   onClick={copyTranscript}
                   title="Copy Transcript"
-                  className="text-xs"
+                  className="border-2 border-[#0d0f10] shadow-[2px_2px_0px_#0d0f10] font-bold text-xs uppercase tracking-wider hover:bg-zinc-100 text-[#0d0f10]"
                 >
                   <Copy className="w-3.5 h-3.5 mr-1" />
                   <span>Copy</span>

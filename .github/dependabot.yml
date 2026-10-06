@@ -1,0 +1,57 @@
+# Dependabot configuration for Voxa
+# Tracks all package ecosystems across the entire repository
+version: 2
+updates:
+  # 1. Root npm / pnpm dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(deps-root)"
+
+  # 2. Frontend Next.js / React application dependencies
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 15
+    commit-message:
+      prefix: "chore(deps-frontend)"
+
+  # 3. Root Cargo workspace
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(deps-cargo-root)"
+
+  # 4. Tauri Rust backend (src-tauri)
+  - package-ecosystem: "cargo"
+    directory: "/frontend/src-tauri"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 15
+    commit-message:
+      prefix: "chore(deps-tauri)"
+
+  # 5. LLaMA Helper sidecar binary
+  - package-ecosystem: "cargo"
+    directory: "/llama-helper"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(deps-llama-helper)"
+
+  # 6. GitHub Actions CI/CD workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(deps-actions)"

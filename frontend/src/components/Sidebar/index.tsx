@@ -566,10 +566,10 @@ const Sidebar: React.FC = () => {
     return (
       <div key={item.id}>
         <div
-          className={`flex items-center transition-all duration-150 group ${item.type === 'folder' && depth === 0
-            ? 'p-3 text-lg font-semibold h-10 mx-3 mt-3 rounded-lg'
-            : `px-3 py-2 my-0.5 rounded-md text-sm ${isActive ? 'bg-blue-100 text-blue-700 font-medium' :
-              hasTranscriptMatch ? 'bg-yellow-50' : 'hover:bg-gray-50'
+          className={`flex items-center transition-all duration-100 group ${item.type === 'folder' && depth === 0
+            ? 'p-2.5 text-xs font-mono font-bold uppercase tracking-wider text-zinc-500 h-9 mx-2 mt-2'
+            : `px-2.5 py-1.5 my-1 rounded-lg text-xs font-bold ${isActive ? 'bg-blue-100/90 text-blue-900 border-2 border-[#0d0f10] shadow-[2px_2px_0px_#0d0f10]' :
+              hasTranscriptMatch ? 'bg-amber-100 border border-amber-500 text-amber-900' : 'border border-transparent hover:border-[#0d0f10] hover:bg-zinc-100 text-[#0d0f10]'
             } cursor-pointer`
             }`}
           style={item.type === 'folder' && depth === 0 ? {} : { paddingLeft }}
@@ -665,18 +665,18 @@ const Sidebar: React.FC = () => {
       {/* Floating collapse button */}
       <button
         onClick={toggleCollapse}
-        className="absolute -right-6 top-20 z-50 p-1 bg-white hover:bg-gray-100 rounded-full shadow-lg border"
+        className="absolute -right-4 top-20 z-50 p-1 bg-white hover:bg-zinc-100 rounded-full border-2 border-[#0d0f10] shadow-[2px_2px_0px_#0d0f10] hover:-translate-x-[1px] transition-all"
         style={{ transform: 'translateX(50%)' }}
       >
         {isCollapsed ? (
-          <ChevronRightCircle className="w-6 h-6" />
+          <ChevronRightCircle className="w-5 h-5 text-[#0d0f10]" />
         ) : (
-          <ChevronLeftCircle className="w-6 h-6" />
+          <ChevronLeftCircle className="w-5 h-5 text-[#0d0f10]" />
         )}
       </button>
 
       <div
-        className={`h-screen bg-white border-r shadow-sm flex flex-col transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'
+        className={`h-screen bg-white border-r-2 border-[#0d0f10] shadow-sm flex flex-col transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'
           }`}
       >
         {/*  Header with traffic light spacing */}
@@ -722,10 +722,10 @@ const Sidebar: React.FC = () => {
             {!isCollapsed && (
               <div
                 onClick={() => router.push('/')}
-                className="p-3  text-lg font-semibold items-center hover:bg-gray-100 h-10   flex mx-3 mt-3 rounded-lg cursor-pointer"
+                className="px-3 py-2 text-xs font-mono font-bold uppercase tracking-wider items-center hover:bg-zinc-100 hover:border-[#0d0f10] border border-transparent h-9 flex mx-2 mt-2 rounded-lg cursor-pointer transition-all text-[#0d0f10]"
               >
                 <Home className="w-4 h-4 mr-2" />
-                <span>Home</span>
+                <span>CONSOLE HOME</span>
               </div>
             )}
           </div>
