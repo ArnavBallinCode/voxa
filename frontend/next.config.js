@@ -13,10 +13,18 @@ const nextConfig = {
   // Add basePath configuration
   basePath: '',
   assetPrefix: '/',
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@heroicons/react'],
+  },
 
   // Add webpack configuration for Tauri
   webpack: (config, { isServer }) => {
     if (!isServer) {
+      config.output = {
+        ...config.output,
+        chunkLoadTimeout: 300000, // 5 minutes (prevents ChunkLoadError timeouts during initial cold-start compilation)
+      };
+
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
