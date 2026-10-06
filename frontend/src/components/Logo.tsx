@@ -16,10 +16,14 @@ const Logo = React.forwardRef<HTMLButtonElement, LogoProps>(
             <button
               ref={ref}
               type="button"
-              className="flex items-center justify-center w-9 h-9 mx-auto mb-3 cursor-pointer bg-[#0d0f10] text-white rounded-lg border-2 border-[#0d0f10] shadow-[2px_2px_0px_#0d0f10] hover:-translate-x-[1px] hover:-translate-y-[1px] transition-all font-black text-sm tracking-tight"
+              className="flex items-center justify-center w-10 h-10 mx-auto mb-3 cursor-pointer bg-white rounded-lg border-2 border-[#0d0f10] shadow-[2px_2px_0px_#0d0f10] hover:-translate-x-[1px] hover:-translate-y-[1px] transition-all p-1"
               aria-label="About Voxa"
             >
-              VX
+              <img
+                src="/logo-collapsed.png"
+                alt="VoxBento Logo"
+                className="w-7 h-7 object-contain"
+              />
             </button>
           </DialogTrigger>
         ) : (
@@ -31,15 +35,19 @@ const Logo = React.forwardRef<HTMLButtonElement, LogoProps>(
               aria-label="About Voxa"
             >
               <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-md bg-[#0d0f10] text-white flex items-center justify-center font-black text-xs tracking-tighter shadow-sm">
-                  VX
+                <div className="w-8 h-8 rounded-md bg-white border border-[#0d0f10] flex items-center justify-center p-1 shadow-sm">
+                  <img
+                    src="/logo-collapsed.png"
+                    alt="VoxBento Icon"
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm font-extrabold text-[#0d0f10] uppercase tracking-wider leading-none">
-                    VOXA
+                    VOXBENTO
                   </span>
                   <span className="text-[9px] font-mono font-bold text-zinc-500 uppercase tracking-widest leading-none mt-1">
-                    CONSOLE // V2
+                    BROADCAST // CONSOLE
                   </span>
                 </div>
               </div>
