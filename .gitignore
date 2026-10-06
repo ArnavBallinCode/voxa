@@ -25,6 +25,7 @@ frontend/src-tauri/binaries/*
 *.flac
 *.mp4
 *.mov
+!frontend/src-tauri/tests/fixtures/**
 
 # Databases & local stores
 *.db
