@@ -3,6 +3,7 @@ import { ModelConfig, ModelSettingsModal } from "./ModelSettingsModal"
 import { TranscriptModelProps, TranscriptSettings } from "./TranscriptSettings"
 import { RecordingSettings, RecordingPreferences } from "./RecordingSettings"
 import { About } from "./About";
+import { VoxBentoSettings } from "./VoxBentoSettings";
 
 interface SettingTabsProps {
     modelConfig: ModelConfig;
@@ -36,25 +37,27 @@ export function SettingTabs({
     <TabsTrigger value="transcriptSettings">Transcript</TabsTrigger>
     <TabsTrigger value="modelSettings">Ai Summary</TabsTrigger>
     <TabsTrigger value="recordingSettings">Preferences</TabsTrigger>
+    <TabsTrigger value="voxbento">VoxBento</TabsTrigger>
     <TabsTrigger value="about">About</TabsTrigger>
   </TabsList>
   <TabsContent value="modelSettings">
     <ModelSettingsModal
-
-modelConfig={modelConfig}
-setModelConfig={setModelConfig}
-onSave={onSave}
-/>
+      modelConfig={modelConfig}
+      setModelConfig={setModelConfig}
+      onSave={onSave}
+    />
   </TabsContent>
-<TabsContent value="transcriptSettings">
+  <TabsContent value="transcriptSettings">
     <TranscriptSettings
-    transcriptModelConfig={transcriptModelConfig}
-    setTranscriptModelConfig={setTranscriptModelConfig}
-    // onSave={onSaveTranscript}
-  />
+      transcriptModelConfig={transcriptModelConfig}
+      setTranscriptModelConfig={setTranscriptModelConfig}
+    />
   </TabsContent>
   <TabsContent value="recordingSettings">
     <RecordingSettings />
+  </TabsContent>
+  <TabsContent value="voxbento">
+    <VoxBentoSettings />
   </TabsContent>
   <TabsContent value="about">
     <About />

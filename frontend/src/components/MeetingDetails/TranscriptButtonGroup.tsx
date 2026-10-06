@@ -19,7 +19,7 @@ interface TranscriptButtonGroupProps {
   meetingId?: string;
   meetingFolderPath?: string | null;
   onRefetchTranscripts?: () => Promise<void>;
-  onExportMarkdown?: () => void;
+  onExportMarkdown?: (style?: 'generic' | 'obsidian') => void;
   onExportText?: () => void;
 }
 
@@ -76,10 +76,16 @@ export function TranscriptButtonGroup({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="border-2 border-[#0d0f10] shadow-[4px_4px_0px_#0d0f10] rounded-lg bg-white">
               {onExportMarkdown && (
-                <DropdownMenuItem onClick={onExportMarkdown} className="cursor-pointer font-bold text-xs uppercase tracking-wider">
-                  <FileCode className="w-4 h-4 mr-2 text-blue-600" />
-                  <span>Markdown (.md)</span>
-                </DropdownMenuItem>
+                <>
+                  <DropdownMenuItem onClick={() => onExportMarkdown('generic')} className="cursor-pointer font-bold text-xs uppercase tracking-wider">
+                    <FileCode className="w-4 h-4 mr-2 text-blue-600" />
+                    <span>Markdown (.md)</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onExportMarkdown('obsidian')} className="cursor-pointer font-bold text-xs uppercase tracking-wider">
+                    <FileCode className="w-4 h-4 mr-2 text-purple-600" />
+                    <span>Obsidian (.md)</span>
+                  </DropdownMenuItem>
+                </>
               )}
               {onExportText && (
                 <DropdownMenuItem onClick={onExportText} className="cursor-pointer font-bold text-xs uppercase tracking-wider">

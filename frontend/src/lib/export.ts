@@ -5,6 +5,13 @@
  */
 
 import type { Meeting, TranscriptSegment, Summary } from '@/types/storage';
+import { buildFrontmatter, formatSpeakerMention, type LinkStyle } from './exportMarkdownFrontmatter';
+import { isLinkableSpeakerName } from './speakerLabels';
+
+export interface MarkdownExportOptions {
+  linkStyle?: LinkStyle;
+  includeFrontmatter?: boolean;
+}
 
 export class MeetingExporter {
   /**
@@ -13,9 +20,34 @@ export class MeetingExporter {
   static toMarkdown(
     meeting: Partial<Meeting>,
     segments: TranscriptSegment[] = [],
-    summary?: Partial<Summary>
+    summary?: Partial<Summary>,
+    options: MarkdownExportOptions = { linkStyle: 'generic', includeFrontmatter: true }
   ): string {
     const lines: string[] = [];
+    const linkStyle = options.linkStyle || 'generic';
+
+    // Collect identified speakers for frontmatter attendees
+    const uniqueSpeakers = Array.from(
+      new Set(
+        segments
+          .map((s) => s.speakerName?.trim())
+          .filter((s): s is string => isLinkableSpeakerName(s))
+      )
+    );
+
+    // Frontmatter (YAML)
+    if (options.includeFrontmatter !== false) {
+      lines.push(
+        buildFrontmatter({
+          title: meeting.title || 'Untitled Meeting',
+          meetingId: String(meeting.id || ''),
+          date: meeting.createdAt ? new Date(meeting.createdAt) : new Date(),
+          attendees: uniqueSpeakers,
+          linkStyle,
+        })
+      );
+      lines.push('');
+    }
 
     // Header
     lines.push(`# ${meeting.title || 'Untitled Meeting'}`);
@@ -25,6 +57,12 @@ export class MeetingExporter {
       const minutes = Math.floor(meeting.durationSeconds / 60);
       const seconds = meeting.durationSeconds % 60;
       lines.push(`- **Duration:** ${minutes}m ${seconds}s`);
+    }
+    if (uniqueSpeakers.length > 0) {
+      const attendeesList = uniqueSpeakers
+        .map((name) => (linkStyle === 'obsidian' ? `[[${name}]]` : name))
+        .join(', ');
+      lines.push(`- **Attendees:** ${attendeesList}`);
     }
     lines.push('');
 
@@ -63,7 +101,8 @@ export class MeetingExporter {
       for (const seg of segments) {
         const timeStr = this.formatTimestamp(seg.startTime);
         const speaker = seg.speakerName || 'Speaker';
-        lines.push(`**[${timeStr}] ${speaker}:** ${seg.text}`);
+        const speakerLabel = formatSpeakerMention(speaker, linkStyle);
+        lines.push(`[${timeStr}] ${speakerLabel} ${seg.text}`);
         lines.push('');
       }
     }

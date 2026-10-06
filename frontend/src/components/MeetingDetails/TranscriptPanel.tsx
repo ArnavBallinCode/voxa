@@ -65,7 +65,7 @@ export function TranscriptPanel({
     }));
   }, [transcripts, usePagination, segments]);
 
-  const handleExportMarkdown = () => {
+  const handleExportMarkdown = (style: 'generic' | 'obsidian' = 'generic') => {
     const segments: any[] = transcripts.map(t => ({
       id: t.id,
       meetingId: meetingId || '',
@@ -76,11 +76,14 @@ export function TranscriptPanel({
     }));
     const content = MeetingExporter.toMarkdown(
       { title: 'Meeting Transcript' },
-      segments
+      segments,
+      undefined,
+      { linkStyle: style, includeFrontmatter: true }
     );
+    const suffix = style === 'obsidian' ? '_obsidian' : '';
     MeetingExporter.downloadFile(
       content,
-      `voxa_meeting_${meetingId || 'transcript'}.md`,
+      `voxa_meeting_${meetingId || 'transcript'}${suffix}.md`,
       'text/markdown'
     );
   };
