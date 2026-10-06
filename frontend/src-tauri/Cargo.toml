@@ -138,7 +138,7 @@ symphonia = { version = "0.5.4", features = ["aac", "isomp4", "mp3", "flac", "og
 rand = "0.8.5"
 rayon = "1.10"
 rubato = "0.15.0"
-ringbuf = "0.4.8"
+ringbuf = "0.5.2"
 tempfile = "3.3.0"
 whatlang = "0.16.4"
 
