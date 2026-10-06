@@ -1,0 +1,16 @@
+{
+  "name": "voxa-root",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Voxa — Open-source meeting intelligence desktop application",
+  "scripts": {
+    "dev": "pnpm --dir frontend run dev",
+    "build": "pnpm --dir frontend run build",
+    "typecheck": "pnpm --dir frontend run typecheck",
+    "tauri": "pnpm --dir frontend run tauri",
+    "tauri:dev": "pnpm --dir frontend run tauri:dev",
+    "tauri:build": "pnpm --dir frontend run tauri:build",
+    "check": "pnpm run typecheck && pnpm run check:rust",
+    "check:rust": "cargo check --manifest-path frontend/src-tauri/Cargo.toml"
+  }
+}

@@ -29,7 +29,9 @@ macro_rules! perf_trace {
 }
 
 // Make these macros available to other modules
+#[allow(unused_imports)]
 pub(crate) use perf_debug;
+#[allow(unused_imports)]
 pub(crate) use perf_trace;
 
 // Re-export async logging macros for external use (removed due to macro conflicts)
@@ -866,3 +868,21 @@ pub fn run() {
             }
         });
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_tauri_config_validation() {
+        let config_str = include_str!("../tauri.conf.json");
+        let config: serde_json::Value = serde_json::from_str(config_str).expect("tauri.conf.json must be valid JSON");
+        assert_eq!(config.get("productName").and_then(|v| v.as_str()), Some("Voxa"));
+        assert_eq!(config.get("identifier").and_then(|v| v.as_str()), Some("com.arnav.voxa"));
+
+        let pubkey = config.pointer("/plugins/updater/pubkey").and_then(|v| v.as_str());
+        assert!(
+            pubkey.is_some() && !pubkey.unwrap().is_empty(),
+            "plugins.updater.pubkey must be present and non-empty to prevent runtime panic on startup"
+        );
+    }
+}
+

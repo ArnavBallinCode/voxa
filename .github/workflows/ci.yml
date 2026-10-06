@@ -64,3 +64,6 @@ jobs:
 
       - name: Rust Check
         run: cargo check --manifest-path frontend/src-tauri/Cargo.toml
+
+      - name: Rust Unit Tests
+        run: cargo test --manifest-path frontend/src-tauri/Cargo.toml
