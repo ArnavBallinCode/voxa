@@ -10,7 +10,8 @@
     "tauri": "pnpm --dir frontend run tauri",
     "tauri:dev": "pnpm --dir frontend run tauri:dev",
     "tauri:build": "pnpm --dir frontend run tauri:build",
-    "check": "pnpm run typecheck && pnpm run check:rust",
-    "check:rust": "cargo check --manifest-path frontend/src-tauri/Cargo.toml"
+    "check": "pnpm run typecheck && pnpm run check:rust && pnpm run test:rust",
+    "check:rust": "cargo check --manifest-path frontend/src-tauri/Cargo.toml",
+    "test:rust": "cargo test --manifest-path frontend/src-tauri/Cargo.toml"
   }
 }
