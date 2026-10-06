@@ -265,9 +265,23 @@ impl SidecarManager {
         {
             let current_model = self.current_model_path.read().await;
             if current_model.as_ref() == Some(&model_path) && self.is_healthy() {
-                log::debug!("Sidecar already running with correct model");
-                self.update_activity().await;
-                return Ok(());
+                let mut child_lock = self.child_process.lock().await;
+                let is_alive = if let Some(child) = child_lock.as_mut() {
+                    match child.try_wait() {
+                        Ok(None) => true,
+                        _ => false,
+                    }
+                } else {
+                    false
+                };
+                if is_alive {
+                    log::debug!("Sidecar already running with correct model");
+                    self.update_activity().await;
+                    return Ok(());
+                } else {
+                    log::warn!("Sidecar marked healthy but process has exited; restarting");
+                    self.is_healthy.store(false, Ordering::SeqCst);
+                }
             }
         }
 
@@ -354,7 +368,7 @@ impl SidecarManager {
         let _guard = RequestGuard::new(self.active_request_count.clone());
 
         // Write request to stdin
-        {
+        let write_result: Result<()> = async {
             let mut stdin_lock = self.stdin_writer.lock().await;
             let stdin = stdin_lock
                 .as_mut()
@@ -369,6 +383,15 @@ impl SidecarManager {
                 .await
                 .context("Failed to write newline")?;
             stdin.flush().await.context("Failed to flush stdin")?;
+            Ok(())
+        }
+        .await;
+
+        if let Err(e) = write_result {
+            log::error!("Failed to write to sidecar stdin: {}, resetting sidecar", e);
+            self.is_healthy.store(false, Ordering::SeqCst);
+            let _ = self.shutdown().await;
+            return Err(e);
         }
 
         // Read response from stdout with timeout
@@ -377,10 +400,16 @@ impl SidecarManager {
                 self.update_activity().await;
                 Ok(response)
             }
-            Ok(Err(e)) => Err(e),
+            Ok(Err(e)) => {
+                log::error!("Failed to read response from sidecar: {}, resetting sidecar", e);
+                self.is_healthy.store(false, Ordering::SeqCst);
+                let _ = self.shutdown().await;
+                Err(e)
+            }
             Err(_) => {
                 // Timeout reached - shutdown sidecar to stop generation
                 log::error!("Request timeout after {:?}, shutting down sidecar", timeout);
+                self.is_healthy.store(false, Ordering::SeqCst);
                 if let Err(shutdown_err) = self.shutdown().await {
                     log::error!("Failed to shutdown sidecar after timeout: {}", shutdown_err);
                 }

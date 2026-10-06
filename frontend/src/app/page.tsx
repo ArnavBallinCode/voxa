@@ -237,14 +237,14 @@ export default function Home() {
         {isLiveMeeting && (hasMicrophone || isRecording) &&
           status !== RecordingStatus.PROCESSING_TRANSCRIPTS &&
           status !== RecordingStatus.SAVING && (
-            <div className="fixed bottom-12 left-0 right-0 z-10">
+            <div className="fixed bottom-12 left-0 right-0 z-10 pointer-events-none">
               <div
                 className="flex justify-center pl-8 transition-[margin] duration-300"
                 style={{
                   marginLeft: sidebarCollapsed ? '4rem' : '16rem'
                 }}
               >
-                <div className="w-2/3 max-w-[750px] flex justify-center">
+                <div className="w-2/3 max-w-[750px] flex justify-center pointer-events-auto">
                   <div className="bg-[#0d0f10] p-1.5 border-2 border-[#0d0f10] shadow-[4px_4px_0px_#0d0f10] rounded-2xl flex items-center">
                     <RecordingControls
                       isRecording={recordingState.isRecording}

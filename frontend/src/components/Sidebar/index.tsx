@@ -823,10 +823,11 @@ const Sidebar: React.FC = () => {
       />
 
       {/* Edit Meeting Title Modal */}
-      <Dialog open={editModalState.isOpen} onOpenChange={(open) => {
-        if (!open) handleEditCancel();
-      }}>
-        <DialogContent className="sm:max-w-[425px]">
+      {editModalState.isOpen && (
+        <Dialog open={editModalState.isOpen} onOpenChange={(open) => {
+          if (!open) handleEditCancel();
+        }}>
+          <DialogContent className="sm:max-w-[425px]">
           <VisuallyHidden>
             <DialogTitle>Edit Meeting Title</DialogTitle>
           </VisuallyHidden>
@@ -872,6 +873,7 @@ const Sidebar: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      )}
     </div>
   );
 };

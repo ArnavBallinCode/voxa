@@ -58,6 +58,16 @@ export function SettingsModals({
 
   const { isRecording } = useRecordingState();
 
+  const hasAnyModalOpen =
+    modals.modelSettings ||
+    modals.deviceSettings ||
+    modals.languageSettings ||
+    modals.modelSelector ||
+    modals.errorAlert ||
+    modals.chunkDropWarning;
+
+  if (!hasAnyModalOpen) return null;
+
   return <>
     {/* Legacy Settings Modal */}
     {modals.modelSettings && (

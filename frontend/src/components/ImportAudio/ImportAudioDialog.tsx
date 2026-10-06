@@ -224,6 +224,8 @@ export function ImportAudioDialog({
     }
   };
 
+  if (!open) return null;
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent

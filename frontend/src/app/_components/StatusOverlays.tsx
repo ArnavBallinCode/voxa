@@ -18,14 +18,14 @@ function StatusOverlay({ show, message, sidebarCollapsed }: StatusOverlayProps) 
   if (!show) return null;
 
   return (
-    <div className="fixed bottom-4 left-0 right-0 z-10">
+    <div className="fixed bottom-4 left-0 right-0 z-10 pointer-events-none">
       <div
         className="flex justify-center pl-8 transition-[margin] duration-300"
         style={{
           marginLeft: sidebarCollapsed ? '4rem' : '16rem'
         }}
       >
-        <div className="w-2/3 max-w-[750px] flex justify-center">
+        <div className="w-2/3 max-w-[750px] flex justify-center pointer-events-auto">
           <div className="bg-white rounded-lg border-2 border-[#0d0f10] shadow-[3px_3px_0px_#0d0f10] px-4 py-2 flex items-center space-x-3">
             <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-[#0d0f10] border-t-transparent"></div>
             <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#0d0f10]">{message}</span>
@@ -36,12 +36,13 @@ function StatusOverlay({ show, message, sidebarCollapsed }: StatusOverlayProps) 
   );
 }
 
-// Main exported component - renders multiple status overlays
 export function StatusOverlays({
   isProcessing,
   isSaving,
   sidebarCollapsed
 }: StatusOverlaysProps) {
+  if (!isProcessing && !isSaving) return null;
+
   return (
     <>
       {/* Processing status overlay - shown after recording stops while finalizing transcription */}

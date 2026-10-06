@@ -112,6 +112,8 @@ export function TranscriptRecovery({
     }
   };
 
+  if (!isOpen) return null;
+
   const selectedMeeting = recoverableMeetings.find(m => m.meetingId === selectedMeetingId);
 
   return (

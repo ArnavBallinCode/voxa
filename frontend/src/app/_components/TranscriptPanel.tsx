@@ -52,7 +52,7 @@ export function TranscriptPanel({
   const displayTitle = meetingTitle && meetingTitle !== '+ New Call' ? meetingTitle : 'Live Meeting';
 
   return (
-    <div ref={transcriptContainerRef} className="w-full bg-white flex flex-col overflow-y-auto">
+    <div ref={transcriptContainerRef} className="w-full h-full flex-1 bg-white flex flex-col overflow-y-auto">
       {/* Title area - Sticky header */}
       <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm px-6 py-3.5 border-b border-zinc-200/80">
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
