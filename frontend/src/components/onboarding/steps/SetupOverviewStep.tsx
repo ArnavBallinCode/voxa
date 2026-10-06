@@ -52,7 +52,7 @@ export function SetupOverviewStep() {
     >
       <div className="flex flex-col items-center space-y-10">
         {/* Steps Card */}
-        <div className="w-full max-w-md bg-white rounded-lg border border-gray-200 p-4">
+        <div className="w-full max-w-md bg-white rounded-xl border-2 border-[#0d0f10] shadow-[4px_4px_0px_#0d0f10] p-6">
           <div className="space-y-4">
             {steps.map((step, idx) => {
               return (
@@ -61,7 +61,7 @@ export function SetupOverviewStep() {
                   className={`flex items-start gap-4 p-1`}
                 >
                   <div className="flex-1 ml-1">
-                    <h3 className="font-medium text-gray-900 flex items-center gap-2">
+                    <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-[#0d0f10] flex items-center gap-2">
                         Step {step.number} :  {step.title}
 
                         {step.type === "summarization" && (
@@ -92,7 +92,7 @@ export function SetupOverviewStep() {
         <div className="w-full max-w-xs space-y-4">
           <Button
             onClick={handleContinue}
-            className="w-full h-11 bg-gray-900 hover:bg-gray-800 text-white"
+            className="w-full h-11 brutal-btn brutal-btn-primary"
           >
             Let's Go
           </Button>

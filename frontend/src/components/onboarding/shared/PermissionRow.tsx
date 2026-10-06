@@ -18,9 +18,9 @@ export function PermissionRow({ icon, title, description, status, isPending = fa
   return (
     <div
       className={cn(
-        'flex items-center justify-between rounded-2xl border px-6 py-5',
+        'flex items-center justify-between rounded-xl px-5 py-4 font-mono', 
         'transition-all duration-200',
-        isAuthorized ? 'border-gray-900 bg-gray-100' : isDenied ? 'border-red-300 bg-red-50' : 'bg-white border-neutral-200'
+        isAuthorized ? 'border-2 border-[#0d0f10] bg-emerald-50 shadow-[3px_3px_0px_#0d0f10]' : isDenied ? 'border-2 border-red-600 bg-red-50 shadow-[3px_3px_0px_#0d0f10]' : 'bg-white border-2 border-[#0d0f10] shadow-[3px_3px_0px_#0d0f10]'
       )}
     >
       {/* Left side: Icon + Info */}
@@ -37,7 +37,7 @@ export function PermissionRow({ icon, title, description, status, isPending = fa
 
         {/* Title + Description */}
         <div className="min-w-0 flex-1">
-          <div className="font-medium truncate text-neutral-900">{title}</div>
+          <div className="font-mono text-xs font-bold uppercase tracking-wider truncate text-[#0d0f10]">{title}</div>
           <div className="text-sm text-muted-foreground">
             {isAuthorized ? (
               <span className="text-green-600 flex items-center gap-1">

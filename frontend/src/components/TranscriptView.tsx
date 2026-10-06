@@ -284,7 +284,7 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({ transcripts, isR
             <div className="flex items-start gap-2">
               <Tooltip>
                 <TooltipTrigger>
-                  <span className="text-xs text-gray-400 mt-1 flex-shrink-0 min-w-[50px]">
+                  <span className="text-[11px] font-mono text-gray-500 font-bold mt-1 flex-shrink-0 min-w-[50px]">
                     {transcript.audio_start_time !== undefined
                       ? formatRecordingTime(transcript.audio_start_time)
                       : transcript.timestamp}
@@ -307,7 +307,7 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({ transcripts, isR
               <div className="flex-1">
                 {isStreaming ? (
                   // Streaming transcript - show in bubble (full width)
-                  <div className="bg-gray-100 border border-gray-200 rounded-lg px-3 py-2">
+                  <div className="bg-white border-2 border-[#0d0f10] shadow-[2px_2px_0px_#0d0f10] rounded-lg px-3 py-2 font-mono text-xs">
                     <div className="relative">
                       <p className="text-base text-gray-800 leading-relaxed" style={{ visibility: 'hidden' }}>
                         {sizerText}

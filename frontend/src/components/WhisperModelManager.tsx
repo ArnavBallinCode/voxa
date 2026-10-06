@@ -607,10 +607,10 @@ function ModelCard({
       className={`
         relative rounded-lg border-2 transition-all cursor-pointer
         ${isSelected && isAvailable
-          ? 'border-blue-500 bg-blue-50'
+          ? 'border-2 border-[#0d0f10] bg-emerald-50 shadow-[4px_4px_0px_#0d0f10]'
           : isAvailable
-            ? 'border-gray-200 hover:border-gray-300 bg-white'
-            : 'border-gray-200 bg-gray-50'
+            ? 'border-2 border-[#0d0f10] bg-white shadow-[2px_2px_0px_#0d0f10] hover:shadow-[4px_4px_0px_#0d0f10]'
+            : 'border-2 border-gray-300 bg-gray-100'
         }
         ${isAvailable ? '' : 'cursor-default'}
       `}
@@ -620,7 +620,7 @@ function ModelCard({
     >
       {/* Recommended Badge */}
       {isRecommended && (
-        <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full font-medium">
+        <div className="absolute -top-2.5 -right-2 bg-[#0d0f10] border border-[#0d0f10] text-white font-mono text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md shadow-[1px_1px_0px_#0d0f10]">
           Recommended
         </div>
       )}

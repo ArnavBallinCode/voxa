@@ -305,8 +305,8 @@ export function BuiltInModelManager({
                   ? 'bg-white border-gray-200'
                   : 'bg-card',
                 selectedModel === model.name
-                  ? 'ring-2 ring-gray-800 border-gray-800'
-                  : 'border-gray-200 hover:border-gray-300',
+                  ? 'border-2 border-[#0d0f10] bg-emerald-50 shadow-[4px_4px_0px_#0d0f10]'
+                  : 'border-2 border-[#0d0f10] bg-white shadow-[2px_2px_0px_#0d0f10] hover:shadow-[4px_4px_0px_#0d0f10]',
                 isAvailable && !modelIsDownloading && 'cursor-pointer'
               )}
               onClick={() => {

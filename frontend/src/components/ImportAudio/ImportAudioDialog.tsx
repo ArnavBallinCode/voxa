@@ -269,7 +269,7 @@ export function ImportAudioDialog({
           {!isProcessing && !error && (
             <>
               {fileInfo ? (
-                <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                <div className="bg-white rounded-xl border-2 border-[#0d0f10] shadow-[3px_3px_0px_#0d0f10] p-4 space-y-3 font-mono">
                   <div className="flex items-start gap-3">
                     <FileAudio className="h-8 w-8 text-blue-600 flex-shrink-0" />
                     <div className="flex-1 min-w-0">
@@ -306,7 +306,7 @@ export function ImportAudioDialog({
                   </Button>
                 </div>
               ) : (
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                <div className="border-2 border-dashed border-[#0d0f10] rounded-xl bg-[#fafbfc] p-8 text-center font-mono">
                   <FileAudio className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <Button onClick={handleSelectFile} disabled={status === 'validating'}>
                     {status === 'validating' ? (

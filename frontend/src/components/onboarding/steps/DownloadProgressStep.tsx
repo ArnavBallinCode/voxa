@@ -406,14 +406,14 @@ export function DownloadProgressStep() {
     modelSize: string,
     sizeUnit = 'MB'
   ) => (
-    <div className="bg-white rounded-xl border border-gray-200 p-5">
+    <div className="bg-white rounded-xl border-2 border-[#0d0f10] shadow-[4px_4px_0px_#0d0f10] p-5 font-mono">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
             {icon}
           </div>
           <div>
-            <h3 className="font-medium text-gray-900">{title}</h3>
+            <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-[#0d0f10]">{title}</h3>
             <p className="text-sm text-gray-500">{modelSize}</p>
           </div>
         </div>
@@ -441,9 +441,9 @@ export function DownloadProgressStep() {
       {/* Progress Bar */}
       {(state.status === 'downloading' || state.status === 'completed') && (
         <div className="space-y-2">
-          <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div className="w-full h-2.5 bg-gray-200 border border-[#0d0f10] rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-gray-700 to-gray-900 rounded-full transition-all duration-300"
+              className="h-full bg-emerald-500 transition-all duration-300"
               style={{ width: `${state.progress}%` }}
             />
           </div>

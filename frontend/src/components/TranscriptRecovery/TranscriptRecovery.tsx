@@ -172,12 +172,12 @@ export function TranscriptRecovery({
           {/* Preview Panel */}
           <div className="flex-1 flex flex-col">
             <h3 className="text-sm font-medium mb-2">Preview</h3>
-            <div className="flex-1 border rounded-lg overflow-hidden flex flex-col">
+            <div className="flex-1 border-2 border-[#0d0f10] rounded-xl shadow-[3px_3px_0px_#0d0f10] overflow-hidden flex flex-col bg-white">
               {selectedMeeting ? (
                 <>
                   {/* Meeting Info */}
-                  <div className="p-4 border-b bg-muted/50">
-                    <h4 className="font-semibold">{selectedMeeting.title}</h4>
+                  <div className="p-4 border-b-2 border-[#0d0f10] bg-[#fafbfc] font-mono">
+                    <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-[#0d0f10]">{selectedMeeting.title}</h4>
                     <p className="text-sm text-muted-foreground mt-1">
                       Started {new Date(selectedMeeting.startTime).toLocaleString()}
                     </p>

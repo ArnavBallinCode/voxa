@@ -34,10 +34,10 @@ export function ProgressIndicator({ current, total, onStepClick }: ProgressIndic
                 disabled={!isClickable}
                 className={`relative flex items-center justify-center transition-all duration-300 ${
                   isCompleted
-                    ? 'w-7 h-7 bg-green-600 rounded-full'
+                    ? 'w-7 h-7 bg-emerald-500 border-2 border-[#0d0f10] rounded-lg shadow-[1px_1px_0px_#0d0f10]'
                     : isActive
-                      ? 'w-8 h-8 bg-gray-900 rounded-full'
-                      : 'w-6 h-6 bg-gray-300 rounded-full'
+                      ? 'w-8 h-8 bg-[#0d0f10] border-2 border-[#0d0f10] rounded-lg text-white shadow-[2px_2px_0px_#0d0f10]'
+                      : 'w-6 h-6 bg-white border border-[#0d0f10] rounded-lg text-gray-400'
                 } ${isClickable ? 'cursor-pointer hover:scale-110 hover:shadow-md' : 'cursor-default'}`}
               >
                 {isCompleted ? (
@@ -55,7 +55,7 @@ export function ProgressIndicator({ current, total, onStepClick }: ProgressIndic
               {index < visibleSteps.length - 1 && (
                 <div
                   className={`h-0.5 w-6 transition-all duration-300 ${
-                    isCompleted ? 'bg-green-600' : 'bg-gray-300'
+                    isCompleted ? 'bg-[#0d0f10]' : 'bg-gray-300'
                   }`}
                 />
               )}

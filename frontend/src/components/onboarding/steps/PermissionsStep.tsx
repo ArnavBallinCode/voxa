@@ -146,13 +146,13 @@ export function PermissionsStep() {
 
         {/* Action Buttons */}
         <div className="flex flex-col gap-3 pt-4">
-          <Button onClick={handleFinish} disabled={!allPermissionsGranted} className="w-full h-11">
+          <Button onClick={handleFinish} disabled={!allPermissionsGranted} className="w-full h-11 brutal-btn brutal-btn-primary">
             Finish Setup
           </Button>
 
           <button
             onClick={handleSkip}
-            className="text-sm text-neutral-500 hover:text-neutral-700 transition-colors"
+            className="text-xs font-mono uppercase tracking-wider text-gray-500 hover:text-black transition-colors"
           >
             I'll do this later
           </button>

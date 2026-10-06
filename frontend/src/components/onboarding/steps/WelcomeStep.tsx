@@ -34,17 +34,17 @@ export function WelcomeStep() {
         <div className="w-16 h-px bg-gray-300" />
 
         {/* Features Card */}
-        <div className="w-full max-w-md bg-white rounded-lg border border-gray-200 shadow-sm p-6 space-y-4">
+        <div className="w-full max-w-md bg-white rounded-xl border-2 border-[#0d0f10] shadow-[4px_4px_0px_#0d0f10] p-6 space-y-4">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
               <div key={index} className="flex items-start gap-3">
                 <div className="flex-shrink-0 mt-0.5">
-                  <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center">
+                  <div className="w-6 h-6 rounded-lg border border-[#0d0f10] bg-[#eef1f6] flex items-center justify-center">
                     <Icon className="w-3 h-3 text-gray-700" />
                   </div>
                 </div>
-                <p className="text-sm text-gray-700 leading-relaxed">{feature.title}</p>
+                <p className="text-xs font-mono text-gray-800 leading-relaxed font-medium uppercase tracking-wide">{feature.title}</p>
               </div>
             );
           })}
@@ -54,7 +54,7 @@ export function WelcomeStep() {
         <div className="w-full max-w-xs space-y-3">
           <Button
             onClick={goNext}
-            className="w-full h-11 bg-gray-900 hover:bg-gray-800 text-white"
+            className="w-full h-11 brutal-btn brutal-btn-primary"
           >
             Get Started
           </Button>
