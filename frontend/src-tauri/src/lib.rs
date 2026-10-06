@@ -67,12 +67,73 @@ use tokio::sync::RwLock;
 static RECORDING_FLAG: AtomicBool = AtomicBool::new(false);
 
 #[cfg(target_os = "windows")]
+static ONNX_RUNTIME_INIT: std::sync::Once = std::sync::Once::new();
+#[cfg(target_os = "windows")]
 static ONNX_RUNTIME_INIT_ERROR: std::sync::OnceLock<String> = std::sync::OnceLock::new();
+
+#[cfg(target_os = "windows")]
+pub(crate) fn init_onnx_runtime(explicit_path: Option<&std::path::Path>) -> Result<(), String> {
+    ONNX_RUNTIME_INIT.call_once(|| {
+        let candidate_path = if let Some(p) = explicit_path {
+            if p.is_file() {
+                Some(p.to_path_buf())
+            } else {
+                None
+            }
+        } else {
+            let manifest_candidate = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+                .join("binaries")
+                .join("onnxruntime")
+                .join("onnxruntime.dll");
+            let relative_candidate = std::path::PathBuf::from("binaries/onnxruntime/onnxruntime.dll");
+            let exe_candidate = std::env::current_exe()
+                .ok()
+                .and_then(|p| p.parent().map(|d| d.join("onnxruntime.dll")));
+
+            [Some(manifest_candidate), Some(relative_candidate), exe_candidate]
+                .into_iter()
+                .flatten()
+                .find(|p| p.is_file())
+        };
+
+        if let Some(runtime_path) = candidate_path {
+            match catch_onnx_runtime_init(|| {
+                ort::init_from(runtime_path.to_string_lossy().into_owned())
+                    .with_telemetry(false)
+                    .commit()
+                    .map(|_| ())
+            }) {
+                Ok(()) => {
+                    log::info!(
+                        "Initialized bundled ONNX Runtime from {}",
+                        runtime_path.display()
+                    );
+                }
+                Err(error) => {
+                    let err_msg = format!(
+                        "Failed to initialize bundled ONNX Runtime from {}: {}",
+                        runtime_path.display(),
+                        error
+                    );
+                    record_onnx_runtime_failure(err_msg);
+                }
+            }
+        } else {
+            record_onnx_runtime_failure("Could not locate bundled onnxruntime.dll".to_string());
+        }
+    });
+
+    if let Some(error) = ONNX_RUNTIME_INIT_ERROR.get() {
+        return Err(error.clone());
+    }
+
+    Ok(())
+}
 
 pub(crate) fn ensure_onnx_runtime_available() -> anyhow::Result<()> {
     #[cfg(target_os = "windows")]
-    if let Some(error) = ONNX_RUNTIME_INIT_ERROR.get() {
-        anyhow::bail!("{error}");
+    {
+        init_onnx_runtime(None).map_err(|error| anyhow::anyhow!("{error}"))?;
     }
 
     Ok(())
@@ -478,33 +539,15 @@ pub fn run() {
         .manage(summary::summary_engine::ModelManagerState(Arc::new(tokio::sync::Mutex::new(None))))
         .setup(|_app| {
             #[cfg(target_os = "windows")]
-            match _app.path().resolve(
-                "onnxruntime.dll",
-                tauri::path::BaseDirectory::Resource,
-            ) {
-                Ok(runtime_path) => {
-                    match catch_onnx_runtime_init(|| {
-                        ort::init_from(runtime_path.to_string_lossy().into_owned())
-                            .with_telemetry(false)
-                            .commit()
-                            .map(|_| ())
-                    }) {
-                        Ok(()) => log::info!(
-                            "Initialized bundled ONNX Runtime from {}",
-                            runtime_path.display()
-                        ),
-                        Err(error) => record_onnx_runtime_failure(format!(
-                            "Failed to initialize bundled ONNX Runtime from {}: {}",
-                            runtime_path.display(),
-                            error
-                        )),
-                    }
+            {
+                let runtime_path = _app
+                    .path()
+                    .resolve("onnxruntime.dll", tauri::path::BaseDirectory::Resource)
+                    .ok();
+                if let Err(error) = init_onnx_runtime(runtime_path.as_deref()) {
+                    log::error!("ONNX Runtime setup failure: {error}");
                 }
-                Err(error) => record_onnx_runtime_failure(format!(
-                    "Failed to resolve bundled ONNX Runtime resource: {}",
-                    error
-                )),
-            };
+            }
 
             log::info!("Application setup complete");
 

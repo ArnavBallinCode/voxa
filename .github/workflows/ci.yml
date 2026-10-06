@@ -65,5 +65,15 @@ jobs:
       - name: Rust Check
         run: cargo check --manifest-path frontend/src-tauri/Cargo.toml
 
+      - name: Configure ONNX Runtime path (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $onnxDir = "$((Get-Item .).FullName)\frontend\src-tauri\binaries\onnxruntime"
+          if (Test-Path $onnxDir) {
+            Write-Host "Adding $onnxDir to GITHUB_PATH"
+            $onnxDir | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          }
+
       - name: Rust Unit Tests
         run: cargo test --manifest-path frontend/src-tauri/Cargo.toml
