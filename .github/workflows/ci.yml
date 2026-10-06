@@ -76,4 +76,4 @@ jobs:
           }
 
       - name: Rust Unit Tests
-        run: cargo test --manifest-path frontend/src-tauri/Cargo.toml
+        run: cargo test --manifest-path frontend/src-tauri/Cargo.toml -- --nocapture
