@@ -8,12 +8,13 @@ node_modules/
 # Build outputs
 .next/
 out/
-build/
+/build/
 dist/
 target/
 frontend/src-tauri/target/
 frontend/src-tauri/binaries/*
 !frontend/src-tauri/binaries/.gitkeep
+!frontend/src-tauri/build/
 
 # Models & Media (Local only)
 **/models/
