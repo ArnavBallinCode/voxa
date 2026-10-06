@@ -32,15 +32,32 @@ fn ensure_llama_helper_binary() {
     let ext = if target.contains("windows") { ".exe" } else { "" };
     let filename = format!("llama-helper-{}{}", target, ext);
     let target_file = binaries_dir.join(filename);
-    
-    if !target_file.exists() {
+
+    let is_stub = target_file.exists() && std::fs::metadata(&target_file).map(|m| m.len() < 1000).unwrap_or(false);
+
+    if !target_file.exists() || is_stub {
         let rel_candidate = std::path::PathBuf::from("../../target/release").join(format!("llama-helper{}", ext));
         let deb_candidate = std::path::PathBuf::from("../../target/debug").join(format!("llama-helper{}", ext));
-        if rel_candidate.exists() {
-            let _ = std::fs::copy(rel_candidate, &target_file);
-        } else if deb_candidate.exists() {
-            let _ = std::fs::copy(deb_candidate, &target_file);
+        
+        if rel_candidate.exists() && std::fs::metadata(&rel_candidate).map(|m| m.len() > 100000).unwrap_or(false) {
+            let _ = std::fs::copy(&rel_candidate, &target_file);
+        } else if deb_candidate.exists() && std::fs::metadata(&deb_candidate).map(|m| m.len() > 100000).unwrap_or(false) {
+            let _ = std::fs::copy(&deb_candidate, &target_file);
         } else {
+            // Attempt to build llama-helper directly
+            let cargo = std::env::var("CARGO").unwrap_or_else(|_| "cargo".to_string());
+            let mut cmd = std::process::Command::new(cargo);
+            cmd.arg("build").arg("-p").arg("llama-helper").arg("--release");
+            #[cfg(target_os = "macos")]
+            cmd.arg("--features").arg("metal");
+            
+            if let Ok(status) = cmd.status() {
+                if status.success() && rel_candidate.exists() {
+                    let _ = std::fs::copy(&rel_candidate, &target_file);
+                    return;
+                }
+            }
+
             #[cfg(unix)]
             {
                 use std::os::unix::fs::PermissionsExt;

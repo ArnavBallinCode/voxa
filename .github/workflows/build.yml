@@ -3,6 +3,8 @@ name: Cross-Platform Build
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
     tags:
       - 'v*'
 
@@ -17,13 +19,13 @@ jobs:
         include:
           - platform: macos-latest
             target: aarch64-apple-darwin
-            artifact_name: Voxa-macOS-aarch64
+            artifact_name: VoxBento-Local-macOS-AppleSilicon
           - platform: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
-            artifact_name: Voxa-Linux-x64
+            artifact_name: VoxBento-Local-Linux-x64
           - platform: windows-latest
             target: x86_64-pc-windows-msvc
-            artifact_name: Voxa-Windows-x64
+            artifact_name: VoxBento-Local-Windows-x64
 
     runs-on: ${{ matrix.platform }}
 
@@ -52,6 +54,23 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev libasound2-dev
 
+      - name: Build llama-helper sidecar binary
+        shell: bash
+        run: |
+          mkdir -p frontend/src-tauri/binaries
+          if [ "${{ runner.os }}" = "macOS" ]; then
+            cargo build -p llama-helper --release --features metal
+            cp target/release/llama-helper frontend/src-tauri/binaries/llama-helper-aarch64-apple-darwin
+            chmod +x frontend/src-tauri/binaries/llama-helper-aarch64-apple-darwin
+          elif [ "${{ runner.os }}" = "Linux" ]; then
+            cargo build -p llama-helper --release
+            cp target/release/llama-helper frontend/src-tauri/binaries/llama-helper-x86_64-unknown-linux-gnu
+            chmod +x frontend/src-tauri/binaries/llama-helper-x86_64-unknown-linux-gnu
+          elif [ "${{ runner.os }}" = "Windows" ]; then
+            cargo build -p llama-helper --release
+            cp target/release/llama-helper.exe frontend/src-tauri/binaries/llama-helper-x86_64-pc-windows-msvc.exe
+          fi
+
       - name: Install frontend dependencies
         working-directory: frontend
         run: pnpm install --frozen-lockfile
@@ -69,10 +88,10 @@ jobs:
         with:
           projectPath: frontend
           tagName: v__VERSION__
-          releaseName: 'Voxa v__VERSION__'
-          releaseBody: 'See release notes for changes in this version.'
-          releaseDraft: true
-          prerelease: false
+          releaseName: 'VoxBento Local v__VERSION__'
+          releaseBody: 'VoxBento Local (Voxa) on-device AI meeting and interpretation console.'
+          releaseDraft: false
+          prerelease: ${{ startsWith(github.ref, 'refs/tags/') == false }}
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
