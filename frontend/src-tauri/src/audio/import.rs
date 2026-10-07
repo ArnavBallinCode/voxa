@@ -329,8 +329,13 @@ async fn run_import<R: Runtime>(
         title, source_path, language, model, provider
     );
 
-    // Determine which provider to use (default to whisper)
+    // Both local engines use the saved glossary: Whisper as an initial prompt,
+    // Parakeet as token-level contextual biasing.
     let use_parakeet = provider.as_deref() == Some("parakeet");
+    let state = app
+        .try_state::<AppState>()
+        .ok_or_else(|| anyhow!("Database not initialized"))?;
+    let vocabulary = crate::database::repositories::vocabulary::VocabularyRepository::get_effective(state.db_manager.pool(), None).await?;
 
     emit_progress(&app, "copying", 5, "Creating meeting folder...");
 
@@ -583,14 +588,14 @@ async fn run_import<R: Runtime>(
         let (text, conf) = if use_parakeet {
             let engine = parakeet_engine.as_ref().unwrap();
             let text = engine
-                .transcribe_audio(segment.samples.clone())
+                .transcribe_audio(segment.samples.clone(), vocabulary.as_deref())
                 .await
                 .map_err(|e| anyhow!("Parakeet transcription failed on segment {}: {}", i, e))?;
             (text, 0.9f32)
         } else {
             let engine = whisper_engine.as_ref().unwrap();
             let (text, conf, _) = engine
-                .transcribe_audio_with_confidence(segment.samples.clone(), language.clone())
+                .transcribe_audio_with_confidence(segment.samples.clone(), language.clone(), vocabulary.as_deref())
                 .await
                 .map_err(|e| anyhow!("Whisper transcription failed on segment {}: {}", i, e))?;
             (text, conf)

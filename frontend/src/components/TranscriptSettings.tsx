@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { Label } from './ui/label';
-import { Eye, EyeOff, Lock, Unlock } from 'lucide-react';
+import { Textarea } from './ui/textarea';
+import { Eye, EyeOff, Lock, Unlock, BookOpen, Check, Loader2 } from 'lucide-react';
 import { ModelManager } from './WhisperModelManager';
 import { ParakeetModelManager } from './ParakeetModelManager';
 
@@ -27,6 +28,46 @@ export function TranscriptSettings({ transcriptModelConfig, setTranscriptModelCo
     const [isApiKeyLocked, setIsApiKeyLocked] = useState<boolean>(true);
     const [isLockButtonVibrating, setIsLockButtonVibrating] = useState<boolean>(false);
     const [uiProvider, setUiProvider] = useState<TranscriptModelProps['provider']>(transcriptModelConfig.provider);
+
+    // Global Vocabulary state
+    const [vocabulary, setVocabulary] = useState<string>('');
+    const [isSavingVocabulary, setIsSavingVocabulary] = useState<boolean>(false);
+    const [vocabularySaved, setVocabularySaved] = useState<boolean>(false);
+    const [vocabularyError, setVocabularyError] = useState<string | null>(null);
+    const vocabularyRevisionRef = useRef<number>(0);
+
+    useEffect(() => {
+        const revision = vocabularyRevisionRef.current;
+        invoke<{ global: string; meeting: string }>('api_get_vocabulary', { meetingId: null })
+            .then((config) => {
+                if (vocabularyRevisionRef.current === revision) {
+                    setVocabulary(config.global || '');
+                }
+            })
+            .catch((error) => {
+                console.error('Failed to load vocabulary:', error);
+                setVocabularyError('Could not load the saved vocabulary.');
+            });
+    }, []);
+
+    const saveVocabulary = async () => {
+        setIsSavingVocabulary(true);
+        setVocabularySaved(false);
+        setVocabularyError(null);
+        const revision = vocabularyRevisionRef.current;
+        try {
+            const normalized = await invoke<string>('api_save_global_vocabulary', { vocabulary });
+            if (vocabularyRevisionRef.current === revision) {
+                setVocabulary(normalized);
+            }
+            setVocabularySaved(true);
+            window.setTimeout(() => setVocabularySaved(false), 2000);
+        } catch (error) {
+            setVocabularyError(typeof error === 'string' ? error : String(error));
+        } finally {
+            setIsSavingVocabulary(false);
+        }
+    };
 
     // Sync uiProvider when backend config changes (e.g., after model selection or initial load)
     useEffect(() => {
@@ -219,9 +260,67 @@ export function TranscriptSettings({ transcriptModelConfig, setTranscriptModelCo
                             </div>
                         </div>
                     )}
+
+                    {/* Pro Feature: Global Vocabulary Hints & Token Biasing */}
+                    <div className="mt-6 p-4 rounded-xl border-2 border-[#0d0f10] bg-[#fafaf9] shadow-[3px_3px_0px_#0d0f10] space-y-3">
+                        <div className="flex items-start gap-3">
+                            <BookOpen className="mt-0.5 h-4 w-4 shrink-0 text-[#0d0f10]" />
+                            <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2">
+                                    <Label htmlFor="transcription-vocabulary" className="text-xs font-bold uppercase tracking-wider text-[#0d0f10]">
+                                        Global Vocabulary & Glossary Hints
+                                    </Label>
+                                    <span className="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold border border-emerald-300">
+                                        PRO
+                                    </span>
+                                </div>
+                                <p className="mt-1 text-xs text-gray-600">
+                                    Boost recognized names, companies, technical acronyms, and specialized jargon. Parakeet uses contextual token-boosting; Whisper utilizes prompt biasing (up to 224 tokens).
+                                </p>
+                            </div>
+                        </div>
+                        <Textarea
+                            id="transcription-vocabulary"
+                            value={vocabulary}
+                            onChange={(event) => {
+                                vocabularyRevisionRef.current += 1;
+                                setVocabulary(event.target.value);
+                                setVocabularySaved(false);
+                                setVocabularyError(null);
+                            }}
+                            maxLength={1000}
+                            rows={4}
+                            disabled={isSavingVocabulary}
+                            placeholder="VoxBento&#10;Tauri&#10;Kubernetes&#10;Whisper&#10;Parakeet"
+                            className="text-xs font-mono resize-y border-2 border-[#0d0f10]"
+                        />
+                        <div className="flex items-center justify-between gap-3 pt-1">
+                            <div className="min-h-5 text-xs font-mono">
+                                {vocabularyError ? (
+                                    <span className="text-red-600 font-bold">{vocabularyError}</span>
+                                ) : vocabularySaved ? (
+                                    <span className="inline-flex items-center gap-1 text-emerald-700 font-bold">
+                                        <Check className="h-3.5 w-3.5" /> Saved & Active
+                                    </span>
+                                ) : (
+                                    <span className="text-gray-500">{vocabulary.length}/1000 characters</span>
+                                )}
+                            </div>
+                            <Button
+                                type="button"
+                                size="sm"
+                                onClick={saveVocabulary}
+                                disabled={isSavingVocabulary}
+                                className="border-2 border-[#0d0f10] shadow-[2px_2px_0px_#0d0f10] bg-[#0d0f10] text-white hover:bg-gray-800 font-mono text-xs font-bold"
+                            >
+                                {isSavingVocabulary && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
+                                Save Glossary
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div >
+        </div>
     )
 }
 

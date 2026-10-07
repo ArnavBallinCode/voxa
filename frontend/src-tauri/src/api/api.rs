@@ -139,6 +139,13 @@ pub struct MeetingTranscript {
     pub duration: Option<f64>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct VocabularyConfig {
+    pub global: String,
+    pub meeting: String,
+}
+
 /// Meeting metadata without transcripts (for pagination)
 #[derive(Debug, Serialize, Deserialize)]
 pub struct MeetingMetadata {
@@ -924,6 +931,50 @@ pub async fn api_save_meeting_title<R: Runtime>(
             Err(format!("Failed to update meeting: {}", e))
         }
     }
+}
+
+#[tauri::command]
+pub async fn api_get_vocabulary(
+    state: tauri::State<'_, AppState>,
+    meeting_id: Option<String>,
+) -> Result<VocabularyConfig, String> {
+    let pool = state.db_manager.pool();
+    let global = crate::database::repositories::vocabulary::VocabularyRepository::get_global(pool)
+        .await
+        .map_err(|error| error.to_string())?
+        .unwrap_or_default();
+    let meeting = match meeting_id.as_deref() {
+        Some(meeting_id) => crate::database::repositories::vocabulary::VocabularyRepository::get_meeting(pool, meeting_id)
+            .await
+            .map_err(|error| error.to_string())?
+            .unwrap_or_default(),
+        None => String::new(),
+    };
+    Ok(VocabularyConfig { global, meeting })
+}
+
+#[tauri::command]
+pub async fn api_save_global_vocabulary(
+    state: tauri::State<'_, AppState>,
+    vocabulary: String,
+) -> Result<String, String> {
+    let pool = state.db_manager.pool();
+    let normalized = crate::database::repositories::vocabulary::VocabularyRepository::normalize(&vocabulary)?;
+    crate::database::repositories::vocabulary::VocabularyRepository::save_global(pool, normalized.as_deref())
+        .await
+        .map_err(|error| error.to_string())?;
+    Ok(normalized.unwrap_or_default())
+}
+
+#[tauri::command]
+pub async fn api_save_meeting_vocabulary(
+    state: tauri::State<'_, AppState>,
+    meeting_id: String,
+    vocabulary: String,
+) -> Result<String, String> {
+    let pool = state.db_manager.pool();
+    let normalized = crate::database::repositories::vocabulary::VocabularyRepository::save_meeting(pool, &meeting_id, &vocabulary).await?;
+    Ok(normalized.unwrap_or_default())
 }
 
 #[tauri::command]

@@ -95,6 +95,7 @@ pub async fn start_retranscription<R: Runtime>(
     language: Option<String>,
     model: Option<String>,
     provider: Option<String>,
+    vocabulary: Option<String>,
 ) -> Result<RetranscriptionResult> {
     // Acquire guard - ensures flag is cleared even on panic/early return
     let _guard = RetranscriptionGuard::acquire().map_err(|e| anyhow!(e))?;
@@ -103,7 +104,16 @@ pub async fn start_retranscription<R: Runtime>(
     RETRANSCRIPTION_CANCELLED.store(false, Ordering::SeqCst);
 
     let use_parakeet = provider.as_deref() == Some("parakeet");
-    let result = run_retranscription(app.clone(), meeting_id.clone(), meeting_folder_path, language, model, provider).await;
+    let result = run_retranscription(
+        app.clone(),
+        meeting_id.clone(),
+        meeting_folder_path,
+        language,
+        model,
+        provider,
+        vocabulary,
+    )
+    .await;
 
     // Unload the engine after the batch job (success, failure, or cancellation)
     super::common::unload_engine_after_batch(use_parakeet).await;
@@ -177,6 +187,7 @@ async fn run_retranscription<R: Runtime>(
     language: Option<String>,
     model: Option<String>,
     provider: Option<String>,
+    vocabulary: Option<String>,
 ) -> Result<RetranscriptionResult> {
     let folder_path = PathBuf::from(&meeting_folder_path);
     let audio_path = find_audio_file(&folder_path)?;
@@ -372,14 +383,18 @@ async fn run_retranscription<R: Runtime>(
         let (text, conf) = if use_parakeet {
             let engine = parakeet_engine.as_ref().unwrap();
             let text = engine
-                .transcribe_audio(segment.samples.clone())
+                .transcribe_audio(segment.samples.clone(), vocabulary.as_deref())
                 .await
                 .map_err(|e| anyhow!("Parakeet transcription failed on segment {}: {}", i, e))?;
             (text, 0.9f32)
         } else {
             let engine = whisper_engine.as_ref().unwrap();
             let (text, conf, _) = engine
-                .transcribe_audio_with_confidence(segment.samples.clone(), language.clone())
+                .transcribe_audio_with_confidence(
+                    segment.samples.clone(),
+                    language.clone(),
+                    vocabulary.as_deref(),
+                )
                 .await
                 .map_err(|e| anyhow!("Whisper transcription failed on segment {}: {}", i, e))?;
             (text, conf)
@@ -792,6 +807,22 @@ pub async fn start_retranscription_command<R: Runtime>(
         return Err("Retranscription already in progress".to_string());
     }
 
+    let vocabulary = match app.try_state::<AppState>() {
+        Some(state) => match crate::database::repositories::vocabulary::VocabularyRepository::get_effective(
+            state.db_manager.pool(),
+            Some(&meeting_id),
+        )
+        .await
+        {
+            Ok(vocab) => vocab,
+            Err(e) => {
+                log::warn!("Failed to load meeting vocabulary: {}", e);
+                None
+            }
+        },
+        None => None,
+    };
+
     // Clone values for the spawned task
     let meeting_id_clone = meeting_id.clone();
 
@@ -804,6 +835,7 @@ pub async fn start_retranscription_command<R: Runtime>(
             language,
             model,
             provider,
+            vocabulary,
         )
         .await;
 

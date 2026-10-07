@@ -5,11 +5,13 @@
 use super::engine::TranscriptionEngine;
 use super::provider::TranscriptionError;
 use crate::audio::AudioChunk;
+use crate::database::repositories::vocabulary::VocabularyRepository;
+use crate::state::AppState;
 use log::{error, info, warn};
 use serde::{Deserialize, Serialize};
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::Arc;
-use tauri::{AppHandle, Emitter, Runtime};
+use tauri::{AppHandle, Emitter, Manager, Runtime};
 
 // Sequence counter for transcript updates
 static SEQUENCE_COUNTER: AtomicU64 = AtomicU64::new(0);
@@ -70,6 +72,17 @@ pub fn start_transcription_task<R: Runtime>(
             }
         };
 
+        let vocabulary = match app.try_state::<AppState>() {
+            Some(state) => match VocabularyRepository::get_effective(state.db_manager.pool(), None).await {
+                Ok(prompt) => prompt,
+                Err(error) => {
+                    warn!("Failed to load transcription vocabulary: {}", error);
+                    None
+                }
+            },
+            None => None,
+        };
+
         // Create parallel workers for faster processing while preserving ALL chunks
         const NUM_WORKERS: usize = 1; // Serial processing ensures transcripts emit in chronological order
         let (work_sender, work_receiver) = tokio::sync::mpsc::unbounded_channel::<AudioChunk>();
@@ -91,6 +104,7 @@ pub fn start_transcription_task<R: Runtime>(
                 TranscriptionEngine::Provider(p) => TranscriptionEngine::Provider(p.clone()),
             };
             let app_clone = app.clone();
+            let vocabulary_clone = vocabulary.clone();
             let work_receiver_clone = work_receiver.clone();
             let chunks_completed_clone = chunks_completed.clone();
             let input_finished_clone = input_finished.clone();
@@ -155,6 +169,7 @@ pub fn start_transcription_task<R: Runtime>(
                                 &engine_clone,
                                 chunk,
                                 &app_clone,
+                                vocabulary_clone.as_deref(),
                             )
                             .await
                             {
@@ -401,6 +416,7 @@ async fn transcribe_chunk_with_provider<R: Runtime>(
     engine: &TranscriptionEngine,
     chunk: AudioChunk,
     app: &AppHandle<R>,
+    vocabulary: Option<&str>,
 ) -> std::result::Result<(String, Option<f32>, bool), TranscriptionError> {
     // Convert to 16kHz mono for transcription
     let transcription_data = if chunk.sample_rate != 16000 {
@@ -441,7 +457,7 @@ async fn transcribe_chunk_with_provider<R: Runtime>(
             let language = crate::get_language_preference_internal();
 
             match whisper_engine
-                .transcribe_audio_with_confidence(speech_samples, language)
+                .transcribe_audio_with_confidence(speech_samples, language, vocabulary)
                 .await
             {
                 Ok((text, confidence, is_partial)) => {
@@ -479,7 +495,7 @@ async fn transcribe_chunk_with_provider<R: Runtime>(
             }
         }
         TranscriptionEngine::Parakeet(parakeet_engine) => {
-            match parakeet_engine.transcribe_audio(speech_samples).await {
+            match parakeet_engine.transcribe_audio(speech_samples, vocabulary).await {
                 Ok(text) => {
                     let cleaned_text = text.trim().to_string();
                     if cleaned_text.is_empty() {
@@ -519,7 +535,7 @@ async fn transcribe_chunk_with_provider<R: Runtime>(
             // NEW: Trait-based provider (clean, unified interface)
             let language = crate::get_language_preference_internal();
 
-            match provider.transcribe(speech_samples, language).await {
+            match provider.transcribe(speech_samples, language, vocabulary).await {
                 Ok(result) => {
                     let cleaned_text = result.text.trim().to_string();
                     if cleaned_text.is_empty() {

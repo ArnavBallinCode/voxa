@@ -53,6 +53,7 @@ pub trait TranscriptionProvider: Send + Sync {
     /// # Arguments
     /// * `audio` - Audio samples (16kHz mono, f32 format)
     /// * `language` - Optional language hint (e.g., "en", "es", "fr")
+    /// * `vocabulary` - Optional comma- or newline-separated context phrases
     ///
     /// # Returns
     /// * `TranscriptResult` with text, optional confidence, and partial flag
@@ -60,6 +61,7 @@ pub trait TranscriptionProvider: Send + Sync {
         &self,
         audio: Vec<f32>,
         language: Option<String>,
+        vocabulary: Option<&str>,
     ) -> std::result::Result<TranscriptResult, TranscriptionError>;
 
     /// Check if a model is currently loaded
