@@ -230,7 +230,8 @@ export function SettingsModals({
           <LanguageSelection
             selectedLanguage={selectedLanguage}
             onLanguageChange={setSelectedLanguage}
-            disabled={isRecording}
+            disabled={false}
+            isRecording={isRecording}
             provider={transcriptModelConfig.provider}
           />
 

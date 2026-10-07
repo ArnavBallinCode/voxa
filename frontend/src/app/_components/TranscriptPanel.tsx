@@ -3,6 +3,7 @@ import { PermissionWarning } from '@/components/PermissionWarning';
 import { Button } from '@/components/ui/button';
 import { ButtonGroup } from '@/components/ui/button-group';
 import { Copy, GlobeIcon } from 'lucide-react';
+import { LiveLanguageSwitcher } from '@/components/LiveLanguageSwitcher';
 import { useTranscripts } from '@/contexts/TranscriptContext';
 import { useConfig } from '@/contexts/ConfigContext';
 import { useRecordingState } from '@/contexts/RecordingStateContext';
@@ -74,6 +75,7 @@ export function TranscriptPanel({
           </div>
 
           <div className="flex items-center space-x-2 flex-shrink-0">
+            <LiveLanguageSwitcher isRecording={isRecording} />
             <ButtonGroup>
               {transcripts?.length > 0 && (
                 <Button
@@ -85,18 +87,6 @@ export function TranscriptPanel({
                 >
                   <Copy className="w-3.5 h-3.5 mr-1" />
                   <span>Copy</span>
-                </Button>
-              )}
-              {transcriptModelConfig.provider === "localWhisper" && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => showModal('languageSettings')}
-                  title="Language"
-                  className="text-xs"
-                >
-                  <GlobeIcon className="w-3.5 h-3.5 mr-1" />
-                  <span>Language</span>
                 </Button>
               )}
             </ButtonGroup>

@@ -18,9 +18,17 @@ import {
   Layers,
   Sparkles,
   Volume2,
+  Languages,
 } from 'lucide-react';
 import type { CurrentMeeting } from '@/components/Sidebar/SidebarProvider';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useConfig } from '@/contexts/ConfigContext';
+import {
+  ALL_WHISPER_LANGUAGES,
+  parseLanguagePreference,
+  formatLanguagePreference,
+  getLanguageBadgeInfo,
+} from '@/lib/language-settings';
 
 interface HomeDashboardProps {
   meetings: CurrentMeeting[];
@@ -59,6 +67,25 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
 }) => {
   const router = useRouter();
   const greeting = useMemo(() => getGreeting(), []);
+  const { selectedLanguage, setSelectedLanguage, transcriptModelConfig } = useConfig();
+
+  const { spoken, translate } = useMemo(
+    () => parseLanguagePreference(selectedLanguage),
+    [selectedLanguage]
+  );
+  const langBadge = useMemo(
+    () => getLanguageBadgeInfo(selectedLanguage),
+    [selectedLanguage]
+  );
+
+  const handleSpokenSelect = (code: string) => {
+    const effectiveTranslate = code === 'en' ? false : translate;
+    setSelectedLanguage(formatLanguagePreference(code, effectiveTranslate));
+  };
+
+  const handleTargetSelect = (shouldTranslate: boolean) => {
+    setSelectedLanguage(formatLanguagePreference(spoken, shouldTranslate));
+  };
 
   // Filter out placeholder/mock items if present
   const validMeetings = useMemo(() => {
@@ -134,6 +161,60 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
               <p className="text-xs text-zinc-600 font-medium leading-relaxed">
                 Records microphone input alongside system audio (Zoom, Google Meet, Teams) with instant VAD segmentation.
               </p>
+            </div>
+
+            {/* Dual Language Route Selector */}
+            <div className="p-3 bg-zinc-50 border-2 border-[#0d0f10] rounded-lg shadow-[2px_2px_0px_#0d0f10] space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase font-black tracking-wider text-zinc-600 flex items-center gap-1.5">
+                  <Languages className="w-3 h-3 text-blue-600" />
+                  SESSION LANGUAGE
+                </span>
+                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-zinc-200 text-zinc-800 border border-zinc-300">
+                  {langBadge.displayText}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[9px] font-mono font-bold uppercase text-zinc-500 mb-0.5">
+                    Spoken (In Room)
+                  </label>
+                  <select
+                    value={spoken}
+                    onChange={(e) => handleSpokenSelect(e.target.value)}
+                    disabled={isStartingRecording}
+                    className="w-full px-2 py-1 text-xs font-mono font-bold bg-white border border-[#0d0f10] rounded shadow-[1px_1px_0px_#0d0f10] focus:outline-none cursor-pointer"
+                  >
+                    {ALL_WHISPER_LANGUAGES.map((lang) => (
+                      <option key={lang.code} value={lang.code}>
+                        {lang.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[9px] font-mono font-bold uppercase text-zinc-500 mb-0.5">
+                    Target Output
+                  </label>
+                  {spoken === 'en' ? (
+                    <div className="px-2 py-1 text-xs font-mono font-bold bg-zinc-200 border border-zinc-400 rounded text-zinc-700 truncate">
+                      English
+                    </div>
+                  ) : (
+                    <select
+                      value={translate ? 'en' : 'original'}
+                      onChange={(e) => handleTargetSelect(e.target.value === 'en')}
+                      disabled={isStartingRecording}
+                      className="w-full px-2 py-1 text-xs font-mono font-bold bg-white border border-[#0d0f10] rounded shadow-[1px_1px_0px_#0d0f10] focus:outline-none cursor-pointer"
+                    >
+                      <option value="original">Original Spoken</option>
+                      <option value="en">Translate to English</option>
+                    </select>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div className="space-y-3 pt-2 border-t-2 border-zinc-100">
