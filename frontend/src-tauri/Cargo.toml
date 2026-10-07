@@ -55,7 +55,7 @@ openmp = ["whisper-rs/openmp"]     # OpenMP parallel processing
 [build-dependencies]
 tauri-build = { version = "2.3.0", features = [] }
 reqwest = { version = "0.11", features = ["blocking", "multipart", "json", "stream"] }
-which = "6.0.1"
+which = "8.0.6"
 zip = "2.2"           # ZIP extraction (Windows, macOS)
 tar = "0.4"           # TAR extraction (Linux)
 xz2 = "0.1"           # XZ decompression (Linux)
@@ -85,7 +85,7 @@ chrono = { version = "0.4.31", features = ["serde"] }
 log = "0.4"
 env_logger = "0.11"
 tracing = "0.1.40"
-which = "6.0.1"
+which = "8.0.6"
 
 # Bytes
 bytemuck = "1.16.1"
