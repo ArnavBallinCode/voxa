@@ -13,6 +13,12 @@ pub fn ensure_ffmpeg_binary() {
     println!("cargo:warning=🎬 Checking FFmpeg binary for target: {}", target);
 
     let binary_name = if target.contains("windows") {
+        format!("voxa-ffmpeg-{}.exe", target)
+    } else {
+        format!("voxa-ffmpeg-{}", target)
+    };
+
+    let legacy_binary_name = if target.contains("windows") {
         format!("ffmpeg-{}.exe", target)
     } else {
         format!("ffmpeg-{}", target)
@@ -22,6 +28,13 @@ pub fn ensure_ffmpeg_binary() {
         .expect("CARGO_MANIFEST_DIR environment variable not set");
     let binaries_dir = std::path::PathBuf::from(&manifest_dir).join("binaries");
     let binary_path = binaries_dir.join(&binary_name);
+    let legacy_binary_path = binaries_dir.join(&legacy_binary_name);
+
+    // Migrate legacy cached binary if available
+    if !binary_path.exists() && legacy_binary_path.exists() && verify_ffmpeg_binary(&legacy_binary_path) {
+        println!("cargo:warning=📋 Migrating cached FFmpeg binary: {} -> {}", legacy_binary_name, binary_name);
+        let _ = std::fs::copy(&legacy_binary_path, &binary_path);
+    }
 
     // Cache check: Skip download if binary exists and works
     if binary_path.exists() {

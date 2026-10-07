@@ -101,7 +101,7 @@
         ],
         "externalBin": [
             "binaries/llama-helper",
-            "binaries/ffmpeg"
+            "binaries/voxa-ffmpeg"
         ],
         "macOS": {
             "entitlements": "entitlements.plist",

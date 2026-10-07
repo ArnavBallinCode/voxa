@@ -10,10 +10,10 @@ use std::path::PathBuf;
 use which::which;
 
 #[cfg(not(windows))]
-const EXECUTABLE_NAME: &str = "ffmpeg";
+const EXECUTABLE_NAMES: &[&str] = &["voxa-ffmpeg", "ffmpeg"];
 
 #[cfg(windows)]
-const EXECUTABLE_NAME: &str = "ffmpeg.exe";
+const EXECUTABLE_NAMES: &[&str] = &["voxa-ffmpeg.exe", "ffmpeg.exe"];
 
 static FFMPEG_PATH: Lazy<Option<PathBuf>> = Lazy::new(find_ffmpeg_path_internal);
 
@@ -29,56 +29,58 @@ fn find_ffmpeg_path_internal() -> Option<PathBuf> {
     // ============================================================
     if let Ok(exe_path) = std::env::current_exe() {
         if let Some(exe_folder) = exe_path.parent() {
-            let bundled = exe_folder.join(EXECUTABLE_NAME);
-            if bundled.exists() && bundled.is_file() {
-                debug!("Found bundled ffmpeg: {:?}", bundled);
-                return Some(bundled);
+            for name in EXECUTABLE_NAMES {
+                let bundled = exe_folder.join(name);
+                if bundled.exists() && bundled.is_file() {
+                    debug!("Found bundled ffmpeg: {:?}", bundled);
+                    return Some(bundled);
+                }
             }
         }
     }
 
-
     // ============================================================
-    // PRIORITY 2: Fallback to Existing Logic
+    // PRIORITY 2: PATH Environment Variable
     // ============================================================
-
-    // Check if `ffmpeg` is in the PATH environment variable
-    if let Ok(path) = which(EXECUTABLE_NAME) {
-        debug!("Found ffmpeg in PATH: {:?}", path);
-        return Some(path);
+    for name in EXECUTABLE_NAMES {
+        if let Ok(path) = which(name) {
+            debug!("Found ffmpeg in PATH: {:?}", path);
+            return Some(path);
+        }
     }
     debug!("ffmpeg not found in PATH");
 
-    // Check in $HOME/.local/bin on macOS
-    #[cfg(target_os = "macos")]
-    {
-        if let Ok(home) = std::env::var("HOME") {
-            let local_bin = PathBuf::from(home).join(".local").join("bin");
-            debug!("Checking $HOME/.local/bin: {:?}", local_bin);
-            let ffmpeg_in_local_bin = local_bin.join(EXECUTABLE_NAME);
+    // Check in $HOME/.local/bin
+    if let Ok(home) = std::env::var("HOME") {
+        let local_bin = PathBuf::from(home).join(".local").join("bin");
+        debug!("Checking $HOME/.local/bin: {:?}", local_bin);
+        for name in EXECUTABLE_NAMES {
+            let ffmpeg_in_local_bin = local_bin.join(name);
             if ffmpeg_in_local_bin.exists() {
                 debug!("Found ffmpeg in $HOME/.local/bin: {:?}", ffmpeg_in_local_bin);
                 return Some(ffmpeg_in_local_bin);
             }
-            debug!("ffmpeg not found in $HOME/.local/bin");
         }
+        debug!("ffmpeg not found in $HOME/.local/bin");
     }
 
     // Check in current working directory
     if let Ok(cwd) = std::env::current_dir() {
         debug!("Current working directory: {:?}", cwd);
-        let ffmpeg_in_cwd = cwd.join(EXECUTABLE_NAME);
-        if ffmpeg_in_cwd.is_file() && ffmpeg_in_cwd.exists() {
-            debug!(
-                "Found ffmpeg in current working directory: {:?}",
-                ffmpeg_in_cwd
-            );
-            return Some(ffmpeg_in_cwd);
+        for name in EXECUTABLE_NAMES {
+            let ffmpeg_in_cwd = cwd.join(name);
+            if ffmpeg_in_cwd.is_file() && ffmpeg_in_cwd.exists() {
+                debug!(
+                    "Found ffmpeg in current working directory: {:?}",
+                    ffmpeg_in_cwd
+                );
+                return Some(ffmpeg_in_cwd);
+            }
         }
         debug!("ffmpeg not found in current working directory");
     }
 
-    // Check in the same folder as the executable
+    // Check in the same folder as the executable or Resources / lib
     if let Ok(exe_path) = std::env::current_exe() {
         if let Some(exe_folder) = exe_path.parent() {
             debug!("Executable folder: {:?}", exe_folder);
@@ -88,13 +90,15 @@ fn find_ffmpeg_path_internal() -> Option<PathBuf> {
             {
                 let resources_folder = exe_folder.join("../Resources");
                 debug!("Resources folder: {:?}", resources_folder);
-                let ffmpeg_in_resources = resources_folder.join(EXECUTABLE_NAME);
-                if ffmpeg_in_resources.exists() {
-                    debug!(
-                        "Found ffmpeg in Resources folder: {:?}",
-                        ffmpeg_in_resources
-                    );
-                    return Some(ffmpeg_in_resources);
+                for name in EXECUTABLE_NAMES {
+                    let ffmpeg_in_resources = resources_folder.join(name);
+                    if ffmpeg_in_resources.exists() {
+                        debug!(
+                            "Found ffmpeg in Resources folder: {:?}",
+                            ffmpeg_in_resources
+                        );
+                        return Some(ffmpeg_in_resources);
+                    }
                 }
                 debug!("ffmpeg not found in Resources folder");
             }
@@ -103,10 +107,12 @@ fn find_ffmpeg_path_internal() -> Option<PathBuf> {
             {
                 let lib_folder = exe_folder.join("lib");
                 debug!("Lib folder: {:?}", lib_folder);
-                let ffmpeg_in_lib = lib_folder.join(EXECUTABLE_NAME);
-                if ffmpeg_in_lib.exists() {
-                    debug!("Found ffmpeg in lib folder: {:?}", ffmpeg_in_lib);
-                    return Some(ffmpeg_in_lib);
+                for name in EXECUTABLE_NAMES {
+                    let ffmpeg_in_lib = lib_folder.join(name);
+                    if ffmpeg_in_lib.exists() {
+                        debug!("Found ffmpeg in lib folder: {:?}", ffmpeg_in_lib);
+                        return Some(ffmpeg_in_lib);
+                    }
                 }
                 debug!("ffmpeg not found in lib folder");
             }
@@ -120,16 +126,20 @@ fn find_ffmpeg_path_internal() -> Option<PathBuf> {
         return None;
     }
 
-    if let Ok(path) = which(EXECUTABLE_NAME) {
-        debug!("found ffmpeg after installation: {:?}", path);
-        return Some(path);
+    for name in EXECUTABLE_NAMES {
+        if let Ok(path) = which(name) {
+            debug!("found ffmpeg after installation: {:?}", path);
+            return Some(path);
+        }
     }
 
     let installation_dir = sidecar_dir().map_err(|e| e.to_string()).unwrap();
-    let ffmpeg_in_installation = installation_dir.join(EXECUTABLE_NAME);
-    if ffmpeg_in_installation.is_file() {
-        debug!("found ffmpeg in directory: {:?}", ffmpeg_in_installation);
-        return Some(ffmpeg_in_installation);
+    for name in EXECUTABLE_NAMES {
+        let ffmpeg_in_installation = installation_dir.join(name);
+        if ffmpeg_in_installation.is_file() {
+            debug!("found ffmpeg in directory: {:?}", ffmpeg_in_installation);
+            return Some(ffmpeg_in_installation);
+        }
     }
 
     // Windows often has nested structure like ffmpeg-6.0-full_build/bin/ffmpeg.exe
@@ -140,17 +150,17 @@ fn find_ffmpeg_path_internal() -> Option<PathBuf> {
             for entry in entries.flatten() {
                 let path = entry.path();
                 if path.is_dir() {
-                    // Check bin/ffmpeg.exe
-                    let bin_ffmpeg = path.join("bin").join(EXECUTABLE_NAME);
-                    if bin_ffmpeg.exists() {
-                        debug!("found ffmpeg in nested bin: {:?}", bin_ffmpeg);
-                        return Some(bin_ffmpeg);
-                    }
-                    // Check root of subdir
-                    let root_ffmpeg = path.join(EXECUTABLE_NAME);
-                    if root_ffmpeg.exists() {
-                        debug!("found ffmpeg in nested root: {:?}", root_ffmpeg);
-                        return Some(root_ffmpeg);
+                    for name in EXECUTABLE_NAMES {
+                        let bin_ffmpeg = path.join("bin").join(name);
+                        if bin_ffmpeg.exists() {
+                            debug!("found ffmpeg in nested bin: {:?}", bin_ffmpeg);
+                            return Some(bin_ffmpeg);
+                        }
+                        let root_ffmpeg = path.join(name);
+                        if root_ffmpeg.exists() {
+                            debug!("found ffmpeg in nested root: {:?}", root_ffmpeg);
+                            return Some(root_ffmpeg);
+                        }
                     }
                 }
             }
@@ -158,7 +168,7 @@ fn find_ffmpeg_path_internal() -> Option<PathBuf> {
     }
 
     error!("ffmpeg not found even after installation");
-    None // Return None if ffmpeg is not found
+    None
 }
 
 fn handle_ffmpeg_installation() -> Result<(), anyhow::Error> {

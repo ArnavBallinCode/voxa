@@ -8,7 +8,7 @@ cask "voxa" do
   homepage "https://voxbento.org/local"
 
   auto_updates false
-  depends_on macos: ">= :sonoma"
+  depends_on macos: :sonoma
 
   app "Voxa.app"
 
