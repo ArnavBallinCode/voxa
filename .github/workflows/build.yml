@@ -38,6 +38,33 @@ jobs:
         with:
           node-version: 22
 
+      - name: Compute build version
+        id: version
+        shell: bash
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            TAG_VER="${GITHUB_REF_NAME#v}"
+            echo "version=${TAG_VER}" >> $GITHUB_OUTPUT
+            echo "tag=v${TAG_VER}" >> $GITHUB_OUTPUT
+          else
+            BUILD_VER="0.1.${{ github.run_number }}"
+            echo "version=${BUILD_VER}" >> $GITHUB_OUTPUT
+            echo "tag=v${BUILD_VER}" >> $GITHUB_OUTPUT
+
+            node -e "
+              const fs = require('fs');
+              const pkgPath = 'frontend/package.json';
+              const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+              pkg.version = '${BUILD_VER}';
+              fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
+
+              const tauriPath = 'frontend/src-tauri/tauri.conf.json';
+              const tauri = JSON.parse(fs.readFileSync(tauriPath, 'utf8'));
+              tauri.version = '${BUILD_VER}';
+              fs.writeFileSync(tauriPath, JSON.stringify(tauri, null, 4));
+            "
+          fi
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
@@ -87,8 +114,8 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           projectPath: frontend
-          tagName: v__VERSION__
-          releaseName: 'VoxBento Local v__VERSION__'
+          tagName: ${{ steps.version.outputs.tag }}
+          releaseName: 'VoxBento Local ${{ steps.version.outputs.tag }}'
           releaseBody: 'VoxBento Local (Voxa) on-device AI meeting and interpretation console.'
           releaseDraft: false
           prerelease: ${{ startsWith(github.ref, 'refs/tags/') == false }}

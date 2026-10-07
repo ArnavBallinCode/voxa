@@ -113,10 +113,6 @@ Meetings and transcripts can be exported immediately:
 
 ---
 
-## Licensing & Attribution
+## License
 
-Voxa is licensed under the [MIT License](LICENSE).
-
-Portions of this software are derived from [Meetily Community Edition](https://github.com/Zackriya-Solutions/meetily) (Copyright © 2024 Zackriya Solutions) under the terms of the MIT License.
-
-See [NOTICE.md](NOTICE.md) for legal derivation notices and [ATTRIBUTIONS.md](ATTRIBUTIONS.md) for complete third-party dependency acknowledgments.
+Voxa is open-source software licensed under the [MIT License](LICENSE). See [ATTRIBUTIONS.md](ATTRIBUTIONS.md) for third-party acknowledgments.

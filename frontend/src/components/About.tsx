@@ -100,7 +100,7 @@ export function About() {
           Created by Arnav Angarkar and the Voxa contributors under the MIT License.
         </p>
         <p className="text-[10px] text-zinc-400 max-w-md mx-auto leading-normal">
-          Voxa incorporates open-source engineering derived from Meetily Community Edition (MIT License). Audio transcription powered by Whisper.cpp and ONNX Runtime.
+          On-device audio transcription and intelligence powered by Whisper and ONNX Runtime. See ATTRIBUTIONS for complete open-source acknowledgments.
         </p>
       </div>
     </div>
