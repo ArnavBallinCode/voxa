@@ -421,6 +421,12 @@ mod tests {
 
     #[tokio::test]
     async fn test_checkpoint_creation() {
+        // Skip if FFmpeg is not installed in the environment
+        if find_ffmpeg_path().is_none() {
+            println!("Skipping test_checkpoint_creation: FFmpeg not available");
+            return;
+        }
+
         // Create temp meeting folder
         let temp_dir = tempdir().unwrap();
         let meeting_folder = temp_dir.path().join("Test_Meeting");
