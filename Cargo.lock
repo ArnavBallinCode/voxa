@@ -5082,18 +5082,6 @@ dependencies = [
 
 [[package]]
 name = "rubato"
-version = "0.15.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b5d18b486e7d29a408ef3f825bc1327d8f87af091c987ca2f5b734625940e234"
-dependencies = [
- "num-complex",
- "num-integer",
- "num-traits",
- "realfft",
-]
-
-[[package]]
-name = "rubato"
 version = "0.16.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5258099699851cfd0082aeb645feb9c084d9a5e1f1b8d5372086b989fc5e56a1"
@@ -5645,7 +5633,7 @@ dependencies = [
  "anyhow",
  "ndarray",
  "ort",
- "rubato 0.16.2",
+ "rubato",
  "thiserror 2.0.18",
  "tracing",
 ]
@@ -7581,7 +7569,7 @@ dependencies = [
  "regex",
  "reqwest 0.11.27",
  "ringbuf",
- "rubato 0.15.0",
+ "rubato",
  "serde",
  "serde_json",
  "sha2",
