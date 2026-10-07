@@ -849,6 +849,20 @@ impl AudioPipeline {
                     // STEP 2: Mix audio in fixed windows when both streams have sufficient data
                     while self.ring_buffer.can_mix() {
                         if let Some((mic_window, sys_window)) = self.ring_buffer.extract_window() {
+                            // Determine dominant speaker (Microphone vs System Audio) for this window
+                            let mic_rms = (mic_window.iter().map(|&x| x * x).sum::<f32>() / mic_window.len().max(1) as f32).sqrt();
+                            let sys_rms = (sys_window.iter().map(|&x| x * x).sum::<f32>() / sys_window.len().max(1) as f32).sqrt();
+
+                            let dominant_device = if mic_rms > 0.002 && mic_rms >= sys_rms * 1.1 {
+                                DeviceType::Microphone
+                            } else if sys_rms > 0.002 && sys_rms >= mic_rms * 1.1 {
+                                DeviceType::System
+                            } else if mic_rms >= sys_rms {
+                                DeviceType::Microphone
+                            } else {
+                                DeviceType::System
+                            };
+
                             // Simple mixing without aggressive ducking
                             let mixed_clean = self.mixer.mix_window(&mic_window, &sys_window);
 
@@ -865,15 +879,15 @@ impl AudioPipeline {
                                         let duration_ms = segment.end_timestamp_ms - segment.start_timestamp_ms;
 
                                         if segment.samples.len() >= 800 {  // Minimum 50ms at 16kHz - matches Parakeet capability
-                                            info!("📤 Sending VAD segment: {:.1}ms, {} samples",
-                                                  duration_ms, segment.samples.len());
+                                            info!("📤 Sending VAD segment: {:.1}ms, {} samples, speaker: {:?}",
+                                                  duration_ms, segment.samples.len(), dominant_device);
 
                                             let transcription_chunk = AudioChunk {
                                                 data: segment.samples,
                                                 sample_rate: 16000,
                                                 timestamp: segment.start_timestamp_ms / 1000.0,
                                                 chunk_id: self.chunk_id_counter,
-                                                device_type: DeviceType::Microphone,  // Mixed audio
+                                                device_type: dominant_device.clone(),
                                             };
 
                                             if let Err(e) = self.transcription_sender.send(transcription_chunk) {
