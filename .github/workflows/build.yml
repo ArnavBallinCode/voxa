@@ -118,7 +118,7 @@ jobs:
           releaseName: 'VoxBento Local ${{ steps.version.outputs.tag }}'
           releaseBody: 'VoxBento Local (Voxa) on-device AI meeting and interpretation console.'
           releaseDraft: false
-          prerelease: ${{ startsWith(github.ref, 'refs/tags/') == false }}
+          prerelease: false
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
